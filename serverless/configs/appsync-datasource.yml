@@ -1,0 +1,10 @@
+Dynamodb:
+  - TableName: Set
+  - TableName: Word
+  - TableName: User
+Lambda:
+  - FunctionName: ImageToWord
+  - FunctionName: AddNewWords
+  - FunctionName: StudyHistory
+  - FunctionName: StudySet
+  - FunctionName: WordToSpeech

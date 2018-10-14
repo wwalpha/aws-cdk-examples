@@ -1,0 +1,54 @@
+UserInfoResource:
+  tableName: User
+  keySchema: 
+    - attributeName: id
+      keyType: HASH
+  attributeDefinitions:
+    - attributeName: id
+      attributeType: S
+  provisionedThroughput:
+    readCapacityUnits: 1
+    writeCapacityUnits: 1
+
+SetResource:
+  tableName: Set
+  keySchema: 
+    - attributeName: userId
+      keyType: HASH
+    - attributeName: setId
+      keyType: RANGE
+  attributeDefinitions:
+    - attributeName: userId
+      attributeType: S
+    - attributeName: setId
+      attributeType: S
+  provisionedThroughput:
+    readCapacityUnits: 1
+    writeCapacityUnits: 1
+
+WordResource:
+  tableName: Word
+  keySchema: 
+    - attributeName: setId
+      keyType: HASH
+    - attributeName: word
+      keyType: RANGE
+  attributeDefinitions:
+    - attributeName: setId
+      attributeType: S
+    - attributeName: word
+      attributeType: S
+    - attributeName: nextDate
+      attributeType: S
+  provisionedThroughput:
+    readCapacityUnits: 1
+    writeCapacityUnits: 1
+  localSecondaryIndexes:
+    - indexName: lsiIndex1
+      keySchema:
+        - attributeName: setId
+          keyType: HASH
+        - attributeName: nextDate
+          keyType: RANGE
+      projection:
+        projectionType: ALL
