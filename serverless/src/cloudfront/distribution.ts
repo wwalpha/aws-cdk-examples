@@ -1,8 +1,8 @@
 import { Construct } from '@aws-cdk/cdk';
 import { cloudformation } from '@aws-cdk/aws-cloudfront';
-import { CloudFrontInput } from '.';
+import { S3Output } from './s3';
 
-export default (parent: Construct, props: CloudFrontInput, identity: string) => new cloudformation.DistributionResource(
+export default (parent: Construct, props: S3Output, identity: string) => new cloudformation.DistributionResource(
   parent,
   'DistributionResource',
   {

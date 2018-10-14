@@ -1,7 +1,7 @@
 import { App, Stack, AwsAccountId, AwsRegion, AwsStackId, AwsStackName } from "@aws-cdk/cdk";
 import { CommonProps } from "./utils";
 import { prefix } from "./utils/consts";
-import { S3Stack, CloudFrontStack } from ".";
+import { CloudFrontStack } from ".";
 
 // import { Stack, App, AwsAccountId, AwsRegion, AwsStackId, AwsStackName } from '@aws-cdk/cdk';
 // import { S3Stack } from '.';
@@ -24,15 +24,7 @@ class RootStack extends Stack {
       ],
     };
 
-    const s3 = new S3Stack(parent, `${prefix(props)}-S3`, props);
-
-    new CloudFrontStack(parent, `${prefix(props)}-CloudFront`, {
-      ...props,
-      bucketArn: s3.output.bucketArn,
-      bucketDomainName: s3.output.bucketDomainName,
-      bucketName: s3.output.bucketName,
-      bucketRef: s3.output.bucketRef,
-    });
+    new CloudFrontStack(parent, `${prefix(props)}-CloudFront`, props);
 
   }
 }

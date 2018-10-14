@@ -1,6 +1,6 @@
 import { CommonProps } from '../utils';
 import { LambdaOutput } from '../lambda';
-import { S3Output } from '../s3';
+import { S3Output } from '../cloudfront/s3';
 
 export { default as UserPool } from './userPool';
 export { default as UserPoolClient } from './userPoolClient';

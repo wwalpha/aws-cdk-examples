@@ -1,4 +1,5 @@
-import { CommonProps } from '../utils';
+import { CommonProps } from '../../utils';
+
 export { default as NewBucket } from './bucket';
 
 

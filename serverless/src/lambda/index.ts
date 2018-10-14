@@ -1,5 +1,5 @@
 import { CommonProps } from '../utils';
-import { S3Output } from '../s3';
+import { S3Output } from '../cloudfront/s3';
 
 // export { default as ImageToWord } from './image-to-word';
 export { default as AddNewWords } from './add-new-words';
