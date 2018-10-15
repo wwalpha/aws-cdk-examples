@@ -1,12 +1,11 @@
 import { CommonProps } from "../utils";
 import { IRestApiResource, Resource } from "@aws-cdk/aws-apigateway";
-import { LambdaOutput } from "../lambda";
 export { default as RestApi } from './restapi';
-// export { default as Resource } from './resource';
+export { default as Authorizer } from './authorizer';
 // export { default as Method } from './method';
 
 export interface ApiGatewayInput extends CommonProps {
-  lambda: LambdaOutput,
+  userPoolArn: string,
 }
 
 export interface ApiGatewayOutput {

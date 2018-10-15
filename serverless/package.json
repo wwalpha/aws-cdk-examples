@@ -9,7 +9,7 @@
     "scripts": {
         "build": "tsc",
         "watch": "tsc -w",
-        "dp": "tsc && cdk deploy"
+        "app": "tsc && cdk deploy"
     },
     "devDependencies": {
         "@types/js-yaml": "^3.11.2",
@@ -21,7 +21,6 @@
     },
     "dependencies": {
         "@aws-cdk/aws-apigateway": "^0.12.0",
-        "@aws-cdk/aws-appsync": "^0.12.0",
         "@aws-cdk/aws-cloudformation": "^0.12.0",
         "@aws-cdk/aws-cloudfront": "^0.12.0",
         "@aws-cdk/aws-codebuild": "^0.12.0",

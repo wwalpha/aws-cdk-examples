@@ -1,5 +1,5 @@
 import { cloudformation } from '@aws-cdk/aws-cognito';
-import { Stack, App, Output } from '@aws-cdk/cdk';
+import { Stack, App } from '@aws-cdk/cdk';
 import { UserPool, UserPoolClient, IdentityPool, IdentityPoolRoleAttachment, CognitoInput, CognitoOutput } from '.';
 import { AuthenticatedRole, UnauthenticatedRole } from '../utils/roles';
 
@@ -9,7 +9,9 @@ export default class CognitoStack extends Stack {
   constructor(parent: App, name: string, props: CognitoInput) {
     super(parent, name, props);
 
+    // User Pool
     const userPool = UserPool(this, props);
+    // User Pool Client
     const userPoolClient = UserPoolClient(this, userPool.ref);
 
     // Cognito Provider
@@ -42,18 +44,5 @@ export default class CognitoStack extends Stack {
       userPoolId: userPool.userPoolId,
       userPoolClientId: userPoolClient.userPoolClientId,
     };
-
-    new Output(this, 'UserPoolId', {
-      export: `${props.env}-${props.project}-UserPoolId`,
-      value: userPool.userPoolId
-    });
-    new Output(this, 'UserPoolClientId', {
-      export: `${props.env}-${props.project}-UserPoolClientId`,
-      value: userPoolClient.userPoolClientId
-    });
-    new Output(this, 'IdentityPoolId', {
-      export: `${props.env}-${props.project}-IdentityPoolId`,
-      value: identityPool.identityPoolId
-    });
   }
 }

@@ -1,9 +1,10 @@
-import { CloudFrontOriginAccessIdentity, CloudFrontInput, BucketPolicy } from '.';
-import { Stack, App } from '@aws-cdk/cdk';
-import { NewBucket } from './s3';
+import { CloudFrontOriginAccessIdentity, CloudFrontInput, BucketPolicy, Distribution } from '.';
+import { Stack, App, Output } from '@aws-cdk/cdk';
+import { NewBucket, S3Output } from './s3';
 import { cloudformation } from '@aws-cdk/aws-s3';
 
 export default class CloudFrontStack extends Stack {
+  public readonly s3Output: S3Output;
 
   constructor(parent: App, name: string, props: CloudFrontInput) {
     super(parent, name, props);
@@ -12,17 +13,31 @@ export default class CloudFrontStack extends Stack {
     const bucket = NewBucket(this, props);
     const bucketResource = bucket.findChild('Resource') as cloudformation.BucketResource;
 
+    const s3Output: S3Output = {
+      bucketRef: bucketResource.ref,
+      bucketArn: bucket.bucketArn,
+      bucketDomainName: bucket.domainName,
+      bucketName: bucket.bucketName,
+    };
+
     // Origin Access Identity
     const identity = CloudFrontOriginAccessIdentity(this);
 
     // Bucket Policy
-    BucketPolicy(this, {
-      ...props,
-      bucketRef: bucketResource.ref,
-      ...bucket.export(),
-    }, identity.ref);
+    BucketPolicy(this, s3Output, identity.ref);
 
-    // Distribution(this, props, identity.ref);
+    Distribution(this, s3Output, identity.ref);
+
+    new Output(this, 'cloudFrontOriginAccessIdentityId', {
+      export: 'cloudFrontOriginAccessIdentityId',
+      value: identity.cloudFrontOriginAccessIdentityId,
+    });
+    new Output(this, 'cloudFrontOriginAccessIdentityS3CanonicalUserId', {
+      export: 'cloudFrontOriginAccessIdentityS3CanonicalUserId',
+      value: identity.cloudFrontOriginAccessIdentityS3CanonicalUserId,
+    });
+
+    this.s3Output = s3Output;
   }
 }
 

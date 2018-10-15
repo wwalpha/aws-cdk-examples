@@ -7,9 +7,9 @@ export interface S3Input extends CommonProps {
 }
 
 export interface S3Output {
-  bucketArn?: string;
-  bucketName?: string;
-  bucketDomainName?: string;
+  bucketArn: string;
+  bucketName: string;
+  bucketDomainName: string;
   bucketRef: string;
 }
 

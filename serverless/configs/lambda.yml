@@ -1,0 +1,14 @@
+default:
+  handler: app.handler
+  runtime: nodejs8.10
+  memorySize: 256
+  timeout: 10
+
+resource:
+  # どのサービスから呼ばれる
+  service: api
+  functionName: addNewWords
+  policy:
+    - s3
+  environment:
+    S3_BUCKET: 

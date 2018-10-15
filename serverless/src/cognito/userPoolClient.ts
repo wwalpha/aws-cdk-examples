@@ -3,14 +3,16 @@ import { Construct } from '@aws-cdk/cdk';
 
 export default (parent: Construct, userPoolId: string) => new cloudformation.UserPoolClientResource(
   parent,
-  'UserPoolClientResource',
+  'UserPoolClient',
   {
     clientName: 'mobile-client',
     generateSecret: false,
     userPoolId,
+    // 認証フロー
     explicitAuthFlows: [
       'ADMIN_NO_SRP_AUTH'
     ],
-    refreshTokenValidity: 6,
+    // Token更新 - 1日
+    refreshTokenValidity: 1,
   },
 );

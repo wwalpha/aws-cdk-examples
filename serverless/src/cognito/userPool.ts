@@ -1,16 +1,33 @@
 import { cloudformation } from '@aws-cdk/aws-cognito';
 import { Construct } from '@aws-cdk/cdk';
 import { CognitoInput } from '.';
+import { prefix } from '../utils/consts';
 
-export default (parent: Construct, _props: CognitoInput) => new cloudformation.UserPoolResource(
+export default (parent: Construct, props: CognitoInput) => new cloudformation.UserPoolResource(
   parent,
-  'UserPoolResource',
+  'UserPool',
   {
     adminCreateUserConfig: {
       // 管理者のみ追加
       allowAdminCreateUserOnly: true,
       // 無効期限10年
       unusedAccountValidityDays: 365,
+      inviteMessageTemplate: {
+        // 招待メールタイトル
+        emailSubject: 'ユーザーID登録完了のお知らせ',
+        // 招待メール本文
+        emailMessage: `
+          <br />
+          このメールはシステムにより自動配信されました。
+          <br />
+          システムにログインできることをご確認ください。
+          ユーザID：{username}
+          パスワード：{####}
+          <br />
+          【照会先】システム管理担当者  xxxxxxx@xxx.co.jp
+          ※このメールアドレスは送信専用です。返信できませんので、ご注意ください。
+        `,
+      }
     },
     policies: {
       // パスワードポリシー
@@ -28,7 +45,7 @@ export default (parent: Construct, _props: CognitoInput) => new cloudformation.U
       },
     },
     // プール名
-    userPoolName: `prefix(props)`,
+    userPoolName: prefix(props),
     // ユーザ属性定義
     schema: [
       {
@@ -47,4 +64,15 @@ export default (parent: Construct, _props: CognitoInput) => new cloudformation.U
     autoVerifiedAttributes: [
       'email',
     ],
+    emailVerificationSubject: 'パスワード変更認証コードのお知らせ',
+    emailVerificationMessage: `
+      <br />
+      このメールはシステムにより自動配信されました。
+      <br />
+      パスワード変更に必要な認証コードが発行されました。
+      認証コードは{####}です。
+      <br />
+      【照会先】システム管理担当者  xxxxxxx@xxx.co.jp
+      ※このメールアドレスは送信専用です。返信できませんので、ご注意ください。
+    `,
   });

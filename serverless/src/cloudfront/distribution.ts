@@ -9,10 +9,10 @@ export default (parent: Construct, props: S3Output, identity: string) => new clo
     distributionConfig: {
       origins: [
         {
-          domainName: props.bucketDomainName as string,
+          domainName: props.bucketDomainName,
           id: 'S3Origin',
           s3OriginConfig: {
-            originAccessIdentity: identity,
+            originAccessIdentity: `origin-access-identity/cloudfront/${identity}`,
           }
         }
       ],

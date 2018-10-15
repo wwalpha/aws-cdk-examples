@@ -2,6 +2,7 @@ import { App, Stack, AwsAccountId, AwsRegion, AwsStackId, AwsStackName } from "@
 import { CommonProps } from "./utils";
 import { prefix } from "./utils/consts";
 import { CloudFrontStack } from ".";
+import CognitoStack from "./cognito/cognito";
 
 // import { Stack, App, AwsAccountId, AwsRegion, AwsStackId, AwsStackName } from '@aws-cdk/cdk';
 // import { S3Stack } from '.';
@@ -24,8 +25,12 @@ class RootStack extends Stack {
       ],
     };
 
-    new CloudFrontStack(parent, `${prefix(props)}-CloudFront`, props);
+    // Cognito
+    new CognitoStack(parent, `${prefix(props)}-Cognito`, props);
 
+    // new apigatew
+    // CloudFront
+    new CloudFrontStack(parent, `${prefix(props)}-CloudFront`, props);
   }
 }
 

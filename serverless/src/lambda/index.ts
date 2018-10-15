@@ -1,5 +1,4 @@
 import { CommonProps } from '../utils';
-import { S3Output } from '../cloudfront/s3';
 
 // export { default as ImageToWord } from './image-to-word';
 export { default as AddNewWords } from './add-new-words';
@@ -16,7 +15,6 @@ export const getHandler = (props: LambdaInput, functionName: string, handler: st
 };
 
 export interface LambdaInput extends CommonProps {
-  s3: S3Output,
 }
 
 export interface LambdaOutput {
