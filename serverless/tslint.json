@@ -11,6 +11,6 @@
     "no-unused-variable": true,
     "semicolon": true,
     "object-shorthand-properties-first": false,
-    "no-function-constructor-with-string-args": false,
+    "no-function-constructor-with-string-args": false
   }
 }

@@ -1,4 +1,4 @@
-import { Construct, } from '@aws-cdk/cdk';
+import { Construct } from '@aws-cdk/cdk';
 import { Runtime, Function } from '@aws-cdk/aws-lambda';
 import { LambdaInput, getHandler } from '../../lambda';
 import { LambdaRole } from '../../utils/roles';
@@ -30,8 +30,8 @@ export default (parent: Construct, props: LambdaInput): Function => {
     role,
     memorySize,
     timeout,
-    environment: {
-      S3_BUCKET: props.s3.bucketName,
-    },
+    // environment: {
+    //   S3_BUCKET: props.s3.bucketName,
+    // },
   });
 };

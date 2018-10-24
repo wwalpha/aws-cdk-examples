@@ -1,8 +1,9 @@
-import { App, Stack, AwsAccountId, AwsRegion, AwsStackId, AwsStackName } from "@aws-cdk/cdk";
-import { CommonProps } from "./utils";
-import { prefix } from "./utils/consts";
-import { CloudFrontStack } from ".";
-import CognitoStack from "./cognito/cognito";
+import { App, Stack, AwsAccountId, AwsRegion, AwsStackId, AwsStackName } from '@aws-cdk/cdk';
+import { CommonProps } from './utils';
+import { prefix } from './utils/consts';
+// import { CloudFrontStack } from '.';
+// import CognitoStack from './cognito/cognito';
+import CodePipelineStack from './codepipeline/codePipeline';
 
 // import { Stack, App, AwsAccountId, AwsRegion, AwsStackId, AwsStackName } from '@aws-cdk/cdk';
 // import { S3Stack } from '.';
@@ -12,7 +13,6 @@ class RootStack extends Stack {
 
   constructor(parent: App, name: string, props: CommonProps) {
     super(parent, name, props);
-
 
     this.templateOptions.metadata = {
 
@@ -25,12 +25,13 @@ class RootStack extends Stack {
       ],
     };
 
-    // Cognito
-    new CognitoStack(parent, `${prefix(props)}-Cognito`, props);
+    // // Cognito
+    // new CognitoStack(parent, `${prefix(props)}-Cognito`, props);
 
-    // new apigatew
-    // CloudFront
-    new CloudFrontStack(parent, `${prefix(props)}-CloudFront`, props);
+    // // new apigatew
+    // // CloudFront
+    // new CloudFrontStack(parent, `${prefix(props)}-CloudFront`, props);
+    new CodePipelineStack(parent, `${prefix(props)}-CodePipeline`, props);
   }
 }
 
@@ -69,8 +70,6 @@ class RootStack extends Stack {
 //     //   bucket: s3,
 //     // });
 
-
-
 //     // RestApi(this, {
 //     //   ...comProps,
 //     //   lambda,
@@ -94,7 +93,6 @@ class RootStack extends Stack {
 // new RootStack(app, `${ENV_TYPE}-${PROJECT_NAME}`, comProps);
 
 // app.run();
-
 
 class MyApp extends App {
   constructor() {

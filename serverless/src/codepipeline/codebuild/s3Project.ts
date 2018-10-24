@@ -1,8 +1,8 @@
 import { Construct } from '@aws-cdk/cdk';
 import { Role } from '@aws-cdk/aws-iam';
 import { Project, ComputeType, LinuxBuildImage, NoBuildArtifacts } from '@aws-cdk/aws-codebuild';
-import { CodeBuildInput } from './codebuild';
-import { prefix } from '../utils/consts';
+import { prefix } from '../../utils/consts';
+import { CodeBuildInput } from '.';
 
 export default (parent: Construct, props: CodeBuildInput, role: Role) => new Project(
   parent,
@@ -15,16 +15,5 @@ export default (parent: Construct, props: CodeBuildInput, role: Role) => new Pro
     },
     role,
     artifacts: new NoBuildArtifacts(),
-    buildSpec: `
-      version: 0.2
-      phases:
-        build:
-          commands:
-            - rspec HelloWorld_spec.rb
-      artifacts:
-        files:
-          - '**/*'
-        name: myname-$(AWS_REGION)
-    `,
   },
 );
