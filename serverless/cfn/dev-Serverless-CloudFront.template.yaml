@@ -1,0 +1,96 @@
+Resources:
+    S3486F821D:
+        Type: 'AWS::S3::Bucket'
+        Properties:
+            BucketEncryption:
+                ServerSideEncryptionConfiguration:
+                    -
+                        ServerSideEncryptionByDefault:
+                            SSEAlgorithm: AES256
+            BucketName: dev-serverless-example
+            VersioningConfiguration:
+                Status: Enabled
+    CloudFrontOriginAccessIdentityResource:
+        Type: 'AWS::CloudFront::CloudFrontOriginAccessIdentity'
+        Properties:
+            CloudFrontOriginAccessIdentityConfig:
+                Comment: ''
+    BucketPolicyResource:
+        Type: 'AWS::S3::BucketPolicy'
+        Properties:
+            Bucket:
+                Ref: S3486F821D
+            PolicyDocument:
+                Statement:
+                    -
+                        Action: 's3:GetObject'
+                        Effect: Allow
+                        Principal:
+                            AWS:
+                                'Fn::Join':
+                                    - ''
+                                    -
+                                        - >-
+                                            arn:aws:iam::cloudfront:user/CloudFront
+                                            Origin Access Identity 
+                                        -
+                                            Ref: CloudFrontOriginAccessIdentityResource
+                        Resource:
+                            'Fn::Join':
+                                - ''
+                                -
+                                    -
+                                        'Fn::GetAtt':
+                                            - S3486F821D
+                                            - Arn
+                                    - /*
+                Version: '2012-10-17'
+    DistributionResource:
+        Type: 'AWS::CloudFront::Distribution'
+        Properties:
+            DistributionConfig:
+                DefaultCacheBehavior:
+                    AllowedMethods:
+                        - GET
+                        - HEAD
+                    ForwardedValues:
+                        Cookies:
+                            Forward: none
+                        QueryString: false
+                    TargetOriginId: S3Origin
+                    ViewerProtocolPolicy: https-only
+                DefaultRootObject: index.html
+                Enabled: true
+                Origins:
+                    -
+                        DomainName:
+                            'Fn::GetAtt':
+                                - S3486F821D
+                                - DomainName
+                        Id: S3Origin
+                        S3OriginConfig:
+                            OriginAccessIdentity:
+                                'Fn::Join':
+                                    - ''
+                                    -
+                                        - origin-access-identity/cloudfront/
+                                        -
+                                            Ref: CloudFrontOriginAccessIdentityResource
+    CDKMetadata:
+        Type: 'AWS::CDK::Metadata'
+        Properties:
+            Modules: >-
+                @aws-cdk/assets=0.14.1,@aws-cdk/aws-apigateway=0.14.1,@aws-cdk/aws-applicationautoscaling=0.14.1,@aws-cdk/aws-cloudfront=0.14.1,@aws-cdk/aws-cloudwatch=0.14.1,@aws-cdk/aws-codebuild=0.14.1,@aws-cdk/aws-codecommit=0.14.1,@aws-cdk/aws-codepipeline=0.14.1,@aws-cdk/aws-codepipeline-api=0.14.1,@aws-cdk/aws-cognito=0.14.1,@aws-cdk/aws-dynamodb=0.14.1,@aws-cdk/aws-ec2=0.14.1,@aws-cdk/aws-events=0.14.1,@aws-cdk/aws-iam=0.14.1,@aws-cdk/aws-kms=0.14.1,@aws-cdk/aws-lambda=0.14.1,@aws-cdk/aws-s3=0.14.1,@aws-cdk/aws-s3-notifications=0.14.1,@aws-cdk/aws-sqs=0.14.1,@aws-cdk/cdk=0.14.1,@aws-cdk/cx-api=0.14.1,cdk=0.1.0,esprima=4.0.1,js-yaml=3.12.0
+Outputs:
+    cloudFrontOriginAccessIdentityId:
+        Value:
+            Ref: CloudFrontOriginAccessIdentityResource
+        Export:
+            Name: cloudFrontOriginAccessIdentityId
+    cloudFrontOriginAccessIdentityS3CanonicalUserId:
+        Value:
+            'Fn::GetAtt':
+                - CloudFrontOriginAccessIdentityResource
+                - S3CanonicalUserId
+        Export:
+            Name: cloudFrontOriginAccessIdentityS3CanonicalUserId
