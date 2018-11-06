@@ -1,4 +1,18 @@
 
+export interface SAM {
+  Parameters: any
+  Resources: Resources
+}
+
+export interface Resources {
+  [key: string]: Resource;
+}
+
+export interface Resource {
+  Type: string;
+  DeletionPolicy?: string;
+  Properties: Function;
+}
 
 export interface Function {
   // Function within your code that is called to begin execution.
@@ -40,19 +54,19 @@ export interface Function {
   // Keys and values are limited to alphanumeric characters. 
   // Keys can be 1 to 127 Unicode characters in length and cannot be prefixed with aws:. Values can be 1 to 255 Unicode characters in length. 7
   // When the stack is created, SAM will automatically add a lambda:createdBy:SAM tag to this Lambda function.
-  Tags: Map;
+  Tags?: Map;
   // String that specifies the function's X-Ray tracing mode. Accepted values are Active and PassThrough
-  Tracing: string;
+  Tracing?: string;
   // The Amazon Resource Name (ARN) of an AWS Key Management Service (AWS KMS) key that Lambda uses to encrypt and decrypt your function's environment variables.
-  KmsKeyArn: string;
+  KmsKeyArn?: string;
   // Configures SNS topic or SQS queue where Lambda sends events that it can't process.
-  DeadLetterQueue: Map | DeadLetterQueue;
+  DeadLetterQueue?: Map | DeadLetterQueue;
   // Settings to enable Safe Lambda Deployments. Read the usage guide for detailed information.
-  DeploymentPreference: DeploymentPreference;
+  DeploymentPreference?: DeploymentPreference;
   // Name of the Alias. Read AutoPublishAlias Guide for how it works
-  AutoPublishAlias: string;
+  AutoPublishAlias?: string;
   // The maximum of concurrent executions you want to reserve for the function
-  ReservedConcurrentExecutions: number;
+  ReservedConcurrentExecutions?: number;
 }
 
 export interface IAMPolicy {
@@ -77,6 +91,13 @@ export interface Event {
 }
 
 export interface EventSource {
+  Type: string;
+  Properties: ApiProperties;
+}
+
+export interface ApiProperties {
+  Path: string;
+  Method: string;
 }
 
 export interface Map {

@@ -1,0 +1,36 @@
+# DefaultRootObject: index.html
+
+# Resources:
+#   S3Origin:
+#     Type: S3
+#     Properties:
+#       OriginPath: /
+#       AllowedMethods:
+#         - GET
+#         - HEAD
+#       ForwardedValues:
+#         QueryString: false
+#         Cookies:
+#           Forward: none
+#       # allow-all, redirect-to-https, https-only
+#       ViewerProtocolPolicy: redirect-to-https
+
+#   ApiOrigin:
+#     Type: Api
+#     Properties:
+#       ForwardedValues:
+#         QueryString: true
+#         Headers:
+#           - Authorization
+#           - Origin
+#       # allow-all, redirect-to-https, https-only
+#       ViewerProtocolPolicy: https-only
+#       PathPattern: /v1/*
+#       AllowedMethods:
+#         - HEAD
+#         - DELETE
+#         - POST
+#         - GET
+#         - OPTIONS
+#         - PUT
+#         - PATCH

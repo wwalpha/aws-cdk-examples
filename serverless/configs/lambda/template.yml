@@ -1,0 +1,46 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Parameters:
+  Env:
+    Type: String
+    Default: dev
+  Project:
+    Type: String
+    Default: Serverless
+
+Resources:
+  AddNewWords:
+    Type: AWS::Serverless::Function
+    DeletionPolicy: Retain
+    Properties:
+      Handler: index.handler
+      Runtime: nodejs8.10
+      CodeUri: test.zip
+      Environment:
+        Variables:
+          TABLE_WORD: !Sub ${Env}-${Project}-Word
+      FunctionName: !Sub ${Env}-${Project}-AddNewWords
+      MemorySize: 256
+      Timeout: 5
+      Events:
+        APIGateway:
+          Type: Api
+          Properties:
+            Path: /test/abc
+            Method: post
+      Policies:
+        Statement:
+          -
+            Sid: Basic
+            Effect: Allow
+            Action:
+              - logs:CreateLogGroup 
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+            Resource: '*'
+          -
+            Sid: DynamoDB
+            Effect: Allow
+            Action:
+              - dynamodb:*
+            Resource: !Sub arn:aws:dynamodb:${AWS::Region}:*:table/*

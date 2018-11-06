@@ -6,9 +6,8 @@
     "module": "commonjs",
     "lib": [
       "es2015",
-      "es2015.promise",
+      "es2015.promise"
     ],
-    // "declaration": true,
     "strict": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
@@ -22,13 +21,41 @@
     "inlineSources": true,
     "experimentalDecorators": true,
     "strictPropertyInitialization": false,
+    "baseUrl": ".",
+    "paths": {
+      "@api": [
+        "./src/apigateway"
+      ],
+      "@cloudfront": [
+        "./src/cloudfront"
+      ],
+      "@utils/*": [
+        "./src/utils/*"
+      ],
+      "@utils": [
+        "./src/utils/index"
+      ],
+      "@const": [
+        "./src/const"
+      ],
+      "@lambda": [
+        "./src/lambda"
+      ],
+      "@dynamodb": [
+        "./src/dynamodb"
+      ]
+    }
   },
   "compileOnSave": true,
   "include": [
     "src/**/*"
   ],
+  "files": [
+    "typings/cloudfront.d.ts",
+    "typings/sam.d.ts"
+  ],
   "exclude": [
     "node_modules",
     "**/*.spec.ts"
-  ],
+  ]
 }

@@ -1,3 +1,3 @@
 {
-    "app": "node dist/app.js"
+    "app": "node -r ./tsconfig-paths.js dist/src/app.js"
 }
