@@ -1,6 +1,6 @@
 import { Stack, App } from '@aws-cdk/cdk';
 import { Pipeline } from '@aws-cdk/aws-codepipeline';
-import { prefix } from '../utils/consts';
+import { prefix } from '@utils';
 import { CodeCommit, CodeBuild, CodePipelineOutput, CodePipelineInput } from '.';
 
 export default class CodePipelineStack extends Stack {

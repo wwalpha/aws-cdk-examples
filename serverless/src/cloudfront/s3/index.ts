@@ -1,7 +1,6 @@
-import { CommonProps } from '../../utils';
+import { CommonProps } from '@utils';
 
 export { default as NewBucket } from './bucket';
-
 
 export interface S3Input extends CommonProps {
 }
@@ -14,7 +13,7 @@ export interface S3Output {
 }
 
 export interface S3EventInput extends CommonProps {
-  s3: S3Output,
+  s3: S3Output;
 }
 
 export interface S3EventOutput {

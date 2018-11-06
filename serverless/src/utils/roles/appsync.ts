@@ -1,7 +1,7 @@
 import { Construct, AwsRegion, AwsAccountId } from '@aws-cdk/cdk';
 import { Role, Policy, ServicePrincipal, PolicyStatement, PolicyStatementEffect } from '@aws-cdk/aws-iam';
 import { RoleProps } from '.';
-import { prefix } from '../consts';
+import { prefix } from '@utils';
 
 const getRole = (parent: Construct, props: RoleProps): Role => new Role(parent, `${props.roleName}Resource`, {
   roleName: `${prefix(props)}-AppSync-${props.roleName}Role`,
@@ -15,7 +15,7 @@ export const lambdaDataSourceRole = (parent: Construct, props: RoleProps): Role 
     statements: [
       new PolicyStatement(PolicyStatementEffect.Allow)
         .addAction('lambda:invokeFunction')
-        .addResource(`arn:aws:lambda:${new AwsRegion()}:${new AwsAccountId()}:function:prefix(props)*`)
+        .addResource(`arn:aws:lambda:${new AwsRegion()}:${new AwsAccountId()}:function:prefix(props)*`),
     ],
   });
 

@@ -1,7 +1,7 @@
 // import { Resource } from "@aws-cdk/aws-apigateway";
 // import { Construct } from "@aws-cdk/cdk";
 // import { ResourceProps } from ".";
-// import { UUID_V4 } from "../utils/consts";
+// import { UUID_V4 } from "@utils";
 
 // export default (parent: Construct, props: ResourceProps) => new Resource(
 //   parent,

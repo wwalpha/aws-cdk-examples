@@ -1,7 +1,6 @@
-import { LambdaOutput, AddNewWords, } from ".";
+import { LambdaOutput } from '.';
 
 export default (): LambdaOutput => {
   return {
-    AddNewWords,
-  }
-}
+  };
+};

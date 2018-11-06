@@ -1,4 +1,4 @@
-import { CommonProps } from '../../utils';
+import { CommonProps } from '@utils';
 import { Bucket } from '@aws-cdk/aws-s3';
 import { Repository } from '@aws-cdk/aws-codecommit';
 

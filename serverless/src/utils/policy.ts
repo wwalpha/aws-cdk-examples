@@ -7,7 +7,7 @@ export const cloudwatch = (parent: Construct, roleName: string) => new Policy(pa
       .addAction('logs:CreateLogGroup')
       .addAction('logs:CreateLogStream')
       .addAction('logs:PutLogEvents')
-      .addResource(`arn:aws:logs:${new AwsRegion()}:*:*`)
+      .addResource(`arn:aws:logs:${new AwsRegion()}:*:*`),
   ],
 });
 
@@ -19,8 +19,8 @@ export const polly = (parent: Construct, roleName: string) => new Policy(parent,
     new PolicyStatement(PolicyStatementEffect.Allow)
       .addAction('polly:SynthesizeSpeech')
       .addResources(
-        `arn:aws:polly:${new AwsRegion()}:${new AwsAccountId()}:lexicon/*`
-      )
+        `arn:aws:polly:${new AwsRegion()}:${new AwsAccountId()}:lexicon/*`,
+      ),
   ],
 });
 
@@ -28,8 +28,8 @@ export const rekognition = (parent: Construct, roleName: string) => new Policy(p
   statements: [
     new PolicyStatement(PolicyStatementEffect.Allow)
       .addAction('rekognition:DetectText')
-      .addAllResources()
-  ]
+      .addAllResources(),
+  ],
 });
 
 export const dynamodb = (parent: Construct, roleName: string) => new Policy(parent, `${roleName}-Dynamodb`, {
@@ -58,7 +58,7 @@ export const s3 = (parent: Construct, roleName: string, bucketName?: string) => 
     new PolicyStatement(PolicyStatementEffect.Allow)
       .addAction('s3:HeadBucket')
       .addAction('s3:ListBucket')
-      .addResource(`arn:aws:s3:::*`),
+      .addResource('arn:aws:s3:::*'),
     new PolicyStatement(PolicyStatementEffect.Allow)
       .addAction('s3:PutObject')
       .addAction('s3:GetObject')

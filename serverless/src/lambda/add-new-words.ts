@@ -1,10 +1,10 @@
-import { Construct, } from '@aws-cdk/cdk';
+import { Construct } from '@aws-cdk/cdk';
 import { Runtime, Function } from '@aws-cdk/aws-lambda';
-import { s3 } from '../utils/policy';
+import { s3 } from '@utils/policy';
 import { getHandler, LambdaInput } from '.';
-import { dummyCode } from '../utils/refs';
-import { LambdaRole } from '../utils/roles';
-import { bucketName, prefix } from '../utils/consts';
+import { dummyCode } from '@utils/refs';
+import { LambdaRole } from '@utils/roles';
+import { bucketName, prefix } from '@utils';
 
 const service = 'appsync';
 const functionName = 'add-new-words';

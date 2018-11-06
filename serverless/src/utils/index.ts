@@ -7,5 +7,7 @@ export interface CommonProps extends StackProps {
 }
 
 export interface LambdaDef {
-  [key: string]: Function,
+  [key: string]: Function;
 }
+
+export * from './consts';

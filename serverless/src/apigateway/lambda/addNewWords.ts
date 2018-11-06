@@ -1,10 +1,10 @@
 import { Construct } from '@aws-cdk/cdk';
 import { Runtime, Function } from '@aws-cdk/aws-lambda';
-import { LambdaInput, getHandler } from '../../lambda';
-import { LambdaRole } from '../../utils/roles';
-import { s3 } from '../../utils/policy';
-import { bucketName, prefix } from '../../utils/consts';
-import { dummyCode } from '../../utils/refs';
+import { LambdaRole } from '@utils/roles';
+import { s3 } from '@utils/policy';
+import { bucketName, prefix } from '@utils';
+import { dummyCode } from '@utils/refs';
+import { LambdaInput, getHandler } from '@lambda';
 
 const service = 'api';
 const functionName = 'addNewWords';

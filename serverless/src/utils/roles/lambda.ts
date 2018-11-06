@@ -1,8 +1,8 @@
 import { Construct } from '@aws-cdk/cdk';
 import { Role, ServicePrincipal } from '@aws-cdk/aws-iam';
-import { cloudwatch } from '../policy';
 import { RoleProps } from '.';
-import { prefix } from '../consts';
+import { prefix } from '@utils';
+import { cloudwatch } from '@utils/policy';
 
 /** Lambda基本ロール */
 export default (parent: Construct, props: RoleProps): Role => {

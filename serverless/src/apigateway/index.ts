@@ -1,22 +1,22 @@
-import { CommonProps } from "../utils";
-import { IRestApiResource, Resource } from "@aws-cdk/aws-apigateway";
+import { CommonProps } from '@utils';
+import { IRestApiResource, Resource, RestApi } from '@aws-cdk/aws-apigateway';
 export { default as RestApi } from './restapi';
 export { default as Authorizer } from './authorizer';
-// export { default as Method } from './method';
 
 export interface ApiGatewayInput extends CommonProps {
-  userPoolArn: string,
+  // userPoolArn: string;
 }
 
 export interface ApiGatewayOutput {
+  restApi: RestApi;
 }
 
 export interface ResourceProps {
-  resouce: IRestApiResource
-  pathPart: string
+  resouce: IRestApiResource;
+  pathPart: string;
 }
 
 export interface MethodProps {
-  resource: Resource
-  method: string
+  resource: Resource;
+  method: string;
 }

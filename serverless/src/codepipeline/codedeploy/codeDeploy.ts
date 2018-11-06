@@ -1,15 +1,15 @@
-import { Construct } from '@aws-cdk/cdk';
-import { CodeDeployInput } from '.';
-import { cloudformation } from '@aws-cdk/aws-codedeploy';
+// import { Construct } from '@aws-cdk/cdk';
+// import { CodeDeployInput } from '.';
+// import { cloudformation } from '@aws-cdk/aws-codedeploy';
 
-export default (parent: Construct, props: CodeDeployInput): void => {
+// export default (parent: Construct, props: CodeDeployInput): void => {
 
-  new cloudformation.ApplicationResource('');
+//   // new cloudformation.ApplicationResource('');
 
-  // Repository作成
-  // const repo = new Repository(parent, 'Repository', {
-  //   repositoryName: props.project,
-  // });
+//   // Repository作成
+//   // const repo = new Repository(parent, 'Repository', {
+//   //   repositoryName: props.project,
+//   // });
 
-  // return repo;
-};
+//   // return repo;
+// };

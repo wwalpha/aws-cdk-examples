@@ -1,6 +1,6 @@
 import { Construct } from '@aws-cdk/cdk';
 import { Role, Policy, ServicePrincipal, PolicyStatement, PolicyStatementEffect } from '@aws-cdk/aws-iam';
-import { prefix } from '../../utils/consts';
+import { prefix } from '@utils';
 import { CodeBuildInput } from '.';
 
 export default (parent: Construct, props: CodeBuildInput): Role => {

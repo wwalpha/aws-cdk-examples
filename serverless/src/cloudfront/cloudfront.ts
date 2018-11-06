@@ -2,6 +2,7 @@ import { CloudFrontOriginAccessIdentity, CloudFrontInput, BucketPolicy, Distribu
 import { Stack, App, Output } from '@aws-cdk/cdk';
 import { NewBucket, S3Output } from './s3';
 import { cloudformation } from '@aws-cdk/aws-s3';
+import { ApiGateway } from '..';
 
 export default class CloudFrontStack extends Stack {
   public readonly s3Output: S3Output;
@@ -26,7 +27,16 @@ export default class CloudFrontStack extends Stack {
     // Bucket Policy
     BucketPolicy(this, s3Output, identity.ref);
 
-    Distribution(this, s3Output, identity.ref);
+    const s3Dist = Distribution(this, s3Output, identity.ref);
+
+    // Dependency
+    s3Dist.addDependency(...bucketResource.dependencyElements);
+
+    // api gateway 作成
+    ApiGateway(this, {
+      project: props.project,
+      envType: props.envType,
+    });
 
     new Output(this, 'cloudFrontOriginAccessIdentityId', {
       export: 'cloudFrontOriginAccessIdentityId',
@@ -40,4 +50,3 @@ export default class CloudFrontStack extends Stack {
     this.s3Output = s3Output;
   }
 }
-

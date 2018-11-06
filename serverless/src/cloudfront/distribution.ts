@@ -13,24 +13,24 @@ export default (parent: Construct, props: S3Output, identity: string) => new clo
           id: 'S3Origin',
           s3OriginConfig: {
             originAccessIdentity: `origin-access-identity/cloudfront/${identity}`,
-          }
-        }
+          },
+        },
       ],
       enabled: true,
       defaultRootObject: 'index.html',
       defaultCacheBehavior: {
         allowedMethods: [
-          'GET', 'HEAD'
+          'GET', 'HEAD',
         ],
         targetOriginId: 'S3Origin',
         forwardedValues: {
           queryString: false,
           cookies: {
             forward: 'none',
-          }
+          },
         },
-        viewerProtocolPolicy: 'https-only'
+        viewerProtocolPolicy: 'https-only',
       },
-    }
-  }
+    },
+  },
 );

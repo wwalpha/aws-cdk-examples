@@ -1,18 +1,15 @@
 import { Role, Policy, FederatedPrincipal, PolicyStatement, PolicyStatementEffect } from '@aws-cdk/aws-iam';
 import { Construct } from '@aws-cdk/cdk';
 import { RoleProps } from '.';
-import { prefix } from '../consts';
+import { prefix } from '@utils';
 
 /** Cognito未認証ロール */
 export const unauthenticatedRole = (parent: Construct, identityPool: string, props: UnauthenticatedRoleProps): Role => {
-  const principal = new FederatedPrincipal('cognito-identity.amazonaws.com',
+  const principal = new FederatedPrincipal(
+    'cognito-identity.amazonaws.com',
     {
-      StringEquals: {
-        'cognito-identity.amazonaws.com:aud': identityPool,
-      },
-      'ForAnyValue:StringLike': {
-        'cognito-identity.amazonaws.com:amr': 'unauthenticated',
-      },
+      StringEquals: { 'cognito-identity.amazonaws.com:aud': identityPool },
+      'ForAnyValue:StringLike': { 'cognito-identity.amazonaws.com:amr': 'unauthenticated' },
     },
     'sts:AssumeRoleWithWebIdentity',
   );
@@ -38,14 +35,11 @@ export const unauthenticatedRole = (parent: Construct, identityPool: string, pro
 
 /** Cognito認証済 */
 export const authenticatedRole = (parent: Construct, identityPool: string, props: AuthenticatedRoleProps): Role => {
-  const principal = new FederatedPrincipal('cognito-identity.amazonaws.com',
+  const principal = new FederatedPrincipal(
+    'cognito-identity.amazonaws.com',
     {
-      StringEquals: {
-        'cognito-identity.amazonaws.com:aud': identityPool,
-      },
-      'ForAnyValue:StringLike': {
-        'cognito-identity.amazonaws.com:amr': 'authenticated',
-      },
+      StringEquals: { 'cognito-identity.amazonaws.com:aud': identityPool },
+      'ForAnyValue:StringLike': { 'cognito-identity.amazonaws.com:amr': 'authenticated' },
     },
     'sts:AssumeRoleWithWebIdentity',
   );

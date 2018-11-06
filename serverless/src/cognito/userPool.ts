@@ -1,7 +1,7 @@
 import { cloudformation } from '@aws-cdk/aws-cognito';
 import { Construct } from '@aws-cdk/cdk';
 import { CognitoInput } from '.';
-import { prefix } from '../utils/consts';
+import { prefix } from '@utils';
 
 export default (parent: Construct, props: CognitoInput) => new cloudformation.UserPoolResource(
   parent,
@@ -27,7 +27,7 @@ export default (parent: Construct, props: CognitoInput) => new cloudformation.Us
           【照会先】システム管理担当者  xxxxxxx@xxx.co.jp
           ※このメールアドレスは送信専用です。返信できませんので、ご注意ください。
         `,
-      }
+      },
     },
     policies: {
       // パスワードポリシー

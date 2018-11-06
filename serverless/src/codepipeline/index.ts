@@ -1,4 +1,4 @@
-import { CommonProps } from '../utils';
+import { CommonProps } from '@utils';
 
 export { default as CodeCommit } from './codecommit/codecommit';
 export { default as CodeBuild } from './codebuild/codebuild';

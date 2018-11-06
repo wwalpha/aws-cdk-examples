@@ -8,7 +8,7 @@ import { DynamodbOutput, DynamodbInput, Table } from '.';
 const configs: any = safeLoad(readFileSync(path.join('./configs', 'dynamodb-tables.yml'), 'utf8'));
 
 export default class DynamodbStack extends Stack {
-  public readonly output: DynamodbOutput
+  public readonly output: DynamodbOutput;
 
   constructor(parent: App, name: string, props: DynamodbInput) {
     super(parent, name, props);
@@ -22,7 +22,6 @@ export default class DynamodbStack extends Stack {
       });
     });
 
-    this.output = {}
+    this.output = {};
   }
 }
-

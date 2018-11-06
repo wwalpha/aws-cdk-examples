@@ -5,4 +5,4 @@ export { default as CloudFrontStack } from './cloudfront/cloudfront';
 // export { default as CodeBuild } from './codebuild/codebuild';
 export { default as CodePipelineStack } from './codepipeline/codePipeline';
 export { default as Lambda } from './lambda/lambda';
-export { default as RestApiStack } from './apigateway/apigateway';
+export { default as ApiGateway } from './apigateway/apigateway';

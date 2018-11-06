@@ -1,4 +1,4 @@
-import { CommonProps } from '../utils';
+import { CommonProps } from '@utils';
 
 export { default as UserPool } from './userPool';
 export { default as UserPoolClient } from './userPoolClient';

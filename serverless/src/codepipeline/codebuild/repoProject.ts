@@ -1,7 +1,7 @@
 import { Construct } from '@aws-cdk/cdk';
 import { Role } from '@aws-cdk/aws-iam';
 import { Project, ComputeType, LinuxBuildImage, NoBuildArtifacts, CodeCommitSource } from '@aws-cdk/aws-codebuild';
-import { prefix } from '../../utils/consts';
+import { prefix } from '@utils';
 import { CodeBuildInput } from '.';
 
 export default (parent: Construct, props: CodeBuildInput, role: Role) => new Project(

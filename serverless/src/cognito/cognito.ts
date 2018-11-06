@@ -1,7 +1,7 @@
 import { cloudformation } from '@aws-cdk/aws-cognito';
 import { Stack, App } from '@aws-cdk/cdk';
 import { UserPool, UserPoolClient, IdentityPool, IdentityPoolRoleAttachment, CognitoInput, CognitoOutput } from '.';
-import { AuthenticatedRole, UnauthenticatedRole } from '../utils/roles';
+import { AuthenticatedRole, UnauthenticatedRole } from '@utils/roles';
 
 export default class CognitoStack extends Stack {
   public readonly output: CognitoOutput;
