@@ -8,7 +8,7 @@ import { CommonProps } from '@utils';
 
 export const getHandler = (props: LambdaInput, functionName: string, handler: string): string => {
   if (props.envType === 'dev') {
-    return `${functionName}/app.handler`;
+    return `${functionName}/${handler}`;
   }
 
   return handler;
