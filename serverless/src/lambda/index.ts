@@ -6,13 +6,7 @@ import { CommonProps } from '@utils';
 // export { default as StudyHistory } from './study-history';
 // export { default as StudySet } from './study-set';
 
-export const getHandler = (props: LambdaInput, functionName: string, handler: string): string => {
-  if (props.envType === 'dev') {
-    return `${functionName}/${handler}`;
-  }
-
-  return handler;
-};
+export * from './utils';
 
 export interface LambdaInput extends CommonProps {
 }

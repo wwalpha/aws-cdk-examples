@@ -27,7 +27,7 @@ Resources:
           Type: Api
           Properties:
             Path: /test/abc
-            Method: post
+            Method: POST
       Policies:
         Statement:
           -

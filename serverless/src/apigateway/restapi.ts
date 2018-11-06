@@ -1,4 +1,4 @@
-import { RestApi, EndpointType } from '@aws-cdk/aws-apigateway';
+import { RestApi, EndpointType, MethodLoggingLevel } from '@aws-cdk/aws-apigateway';
 import { Construct } from '@aws-cdk/cdk';
 import { ApiGatewayInput } from '.';
 import { prefix } from '@utils';
@@ -6,13 +6,18 @@ import { prefix } from '@utils';
 
 export default (parent: Construct, props: ApiGatewayInput) => new RestApi(
   parent,
-  'RestApiRestApi',
+  'RestApi2',
   {
     restApiName: `${prefix(props)}-api`,
     // endpointTypes
     endpointTypes: [
       EndpointType.Regional,
     ],
+    deploy: true,
+    deployOptions: {
+      loggingLevel: MethodLoggingLevel.Info,
+      stageName: 'v1',
+    },
     // IP制限
     // policy: (() => {
     //   const policy = new PolicyDocument();

@@ -1,23 +1,14 @@
 import { Construct } from '@aws-cdk/cdk';
-import { ApiGatewayInput, ApiGatewayOutput, RestApi } from '.';
-import { Code, Function, Runtime } from '@aws-cdk/aws-lambda';
-import { prefix, CommonProps } from '@utils';
+import { ApiGatewayInput, ApiGatewayOutput, Api } from '.';
 import { Schema, Type, safeLoad } from 'js-yaml';
 import { readFileSync } from 'fs';
-import { SAM, Resource, ApiProperties, FunctionEnvironment } from 'typings/sam';
+import { SAM, ApiProperties } from 'typings/sam';
 import { LAMBDA_FILE } from '@const';
-import * as API from '@aws-cdk/aws-apigateway';
-// import { CommonProps } from 'src/utils';
-
-// import { Construct } from "@aws-cdk/cdk";
-// // import { AwsIntegration, AuthorizationType, MethodOptions, cloudformation } from "@aws-cdk/aws-apigateway";
-// // import { Role, ServicePrincipal } from "@aws-cdk/aws-iam";
-// // import { HttpMethod, bucketName, prefix, } from "@utils";
-// // import { s3 } from "@utils/policy";
-// import { RestApi, ApiGatewayInput, ApiGatewayOutput } from ".";
+import { getFunction } from '@lambda';
+import { LambdaIntegration, IRestApiResource, RestApi, AuthorizationType, PassthroughBehavior } from '@aws-cdk/aws-apigateway';
 
 export default (parent: Construct, props: ApiGatewayInput): ApiGatewayOutput => {
-  const api = RestApi(parent, props);
+  const api = Api(parent, props);
 
   const subType = new Type('!Sub', {
     kind: 'scalar',
@@ -46,7 +37,12 @@ export default (parent: Construct, props: ApiGatewayInput): ApiGatewayOutput => 
     const funcRef = getFunction(parent, props, key, resource);
 
     // Lambda Function追加
-    addMethod(api, Events[event].Properties, new API.LambdaIntegration(funcRef));
+    addMethod(api, Events[event].Properties, new LambdaIntegration(funcRef, {
+      integrationResponses: [{
+        statusCode: '200',
+      }],
+      passthroughBehavior: PassthroughBehavior.WhenNoTemplates,
+    }));
   });
 
   // config.
@@ -98,10 +94,10 @@ export default (parent: Construct, props: ApiGatewayInput): ApiGatewayOutput => 
 const apis = {} as any;
 
 /** Lambda Function */
-const addMethod = (api: API.RestApi, { Method, Path }: ApiProperties, funcRef: API.LambdaIntegration) => {
+const addMethod = (api: RestApi, { Method, Path }: ApiProperties, funcRef: LambdaIntegration) => {
   const paths = Path.split('/');
 
-  let item: API.IRestApiResource = api.root;
+  let item: IRestApiResource = api.root;
 
   // Pathごとリソースを作成する
   paths.forEach((path) => {
@@ -119,57 +115,7 @@ const addMethod = (api: API.RestApi, { Method, Path }: ApiProperties, funcRef: A
     };
   });
 
-  item.addMethod(Method, funcRef);
-};
-
-const getFunction = (parent: Construct, props: CommonProps, name: string, { Properties }: Resource) => new Function(parent, name, {
-  code: Code.inline('dummy'),
-  handler: Properties.Handler,
-  runtime: getRuntime(Properties.Runtime),
-  functionName: `${prefix(props)}-${getName(Properties.FunctionName)}`,
-  timeout: Properties.Timeout,
-  memorySize: Properties.MemorySize,
-  environment: getEnvironment(props, Properties.Environment),
-  description: Properties.Description,
-  // deadLetterQueue: Properties.DeadLetterQueue,
-});
-
-const getEnvironment = (props: CommonProps, env?: FunctionEnvironment) => {
-  if (!env || !env.Variables) return undefined;
-
-  Object.keys(env.Variables).forEach((key) => {
-    if (env.Variables[key]) {
-      env.Variables[key] = `${prefix(props)}-${getName(env.Variables[key])}`;
-    }
+  item.addMethod(Method, funcRef, {
+    authorizationType: AuthorizationType.IAM,
   });
-
-  return env.Variables;
 };
-
-const getName = (name?: string) => {
-  if (!name) return '';
-
-  const splits = name.split('-');
-
-  return name[splits.length - 1];
-};
-const getRuntime = (runtime: string): Runtime => {
-  if (runtime === 'nodejs8.10') return Runtime.NodeJS810;
-  if (runtime === 'python3.6') return Runtime.Python36;
-  if (runtime === 'python2.7') return Runtime.Python27;
-  if (runtime === 'java8') return Runtime.Java8;
-
-  throw new Error('UnSupported Runtime');
-};
-
-// // const IAM: MethodOptions = { authorizationType: AuthorizationType.IAM };
-
-// // const uploadRole = (parent: Construct, props: ApiGatewayInput): Role => {
-// //   const role = new Role(parent, `${prefix(props)}-UploadMethodRole`, {
-// //     assumedBy: new ServicePrincipal('apigateway.amazonaws.com'),
-// //   });
-
-// //   role.attachInlinePolicy(s3(parent, `UploadMethodPolicy`, bucketName(props)));
-
-// //   return role;
-// // }

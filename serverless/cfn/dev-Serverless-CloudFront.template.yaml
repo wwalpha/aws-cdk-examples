@@ -1,309 +1,316 @@
 Resources:
-  S3486F821D:
-    Type: 'AWS::S3::Bucket'
-    Properties:
-      BucketEncryption:
-        ServerSideEncryptionConfiguration:
-          -
-            ServerSideEncryptionByDefault:
-              SSEAlgorithm: AES256
-      BucketName: dev-serverless-example
-      VersioningConfiguration:
-        Status: Enabled
-  CloudFrontOriginAccessIdentityResource:
-    Type: 'AWS::CloudFront::CloudFrontOriginAccessIdentity'
-    Properties:
-      CloudFrontOriginAccessIdentityConfig:
-        Comment: ''
-  BucketPolicyResource:
-    Type: 'AWS::S3::BucketPolicy'
-    Properties:
-      Bucket:
-        Ref: S3486F821D
-      PolicyDocument:
-        Statement:
-          -
-            Action: 's3:GetObject'
-            Effect: Allow
-            Principal:
-              AWS:
-                'Fn::Join':
-                  - ''
-                  -
-                    - >-
-                      arn:aws:iam::cloudfront:user/CloudFront
-                      Origin Access Identity 
+    S3486F821D:
+        Type: 'AWS::S3::Bucket'
+        Properties:
+            BucketEncryption:
+                ServerSideEncryptionConfiguration:
                     -
-                      Ref: CloudFrontOriginAccessIdentityResource
-            Resource:
-              'Fn::Join':
+                        ServerSideEncryptionByDefault:
+                            SSEAlgorithm: AES256
+            BucketName: dev-serverless-example
+            VersioningConfiguration:
+                Status: Enabled
+    CloudFrontOriginAccessIdentityResource:
+        Type: 'AWS::CloudFront::CloudFrontOriginAccessIdentity'
+        Properties:
+            CloudFrontOriginAccessIdentityConfig:
+                Comment: ''
+    BucketPolicyResource:
+        Type: 'AWS::S3::BucketPolicy'
+        Properties:
+            Bucket:
+                Ref: S3486F821D
+            PolicyDocument:
+                Statement:
+                    -
+                        Action: 's3:GetObject'
+                        Effect: Allow
+                        Principal:
+                            AWS:
+                                'Fn::Join':
+                                    - ''
+                                    -
+                                        - >-
+                                            arn:aws:iam::cloudfront:user/CloudFront
+                                            Origin Access Identity 
+                                        -
+                                            Ref: CloudFrontOriginAccessIdentityResource
+                        Resource:
+                            'Fn::Join':
+                                - ''
+                                -
+                                    -
+                                        'Fn::GetAtt':
+                                            - S3486F821D
+                                            - Arn
+                                    - /*
+                Version: '2012-10-17'
+    DistributionResource:
+        Type: 'AWS::CloudFront::Distribution'
+        Properties:
+            DistributionConfig:
+                DefaultCacheBehavior:
+                    AllowedMethods:
+                        - GET
+                        - HEAD
+                    ForwardedValues:
+                        Cookies:
+                            Forward: none
+                        QueryString: false
+                    TargetOriginId: S3Origin
+                    ViewerProtocolPolicy: https-only
+                DefaultRootObject: index.html
+                Enabled: true
+                Origins:
+                    -
+                        DomainName:
+                            'Fn::GetAtt':
+                                - S3486F821D
+                                - DomainName
+                        Id: S3Origin
+                        S3OriginConfig:
+                            OriginAccessIdentity:
+                                'Fn::Join':
+                                    - ''
+                                    -
+                                        - origin-access-identity/cloudfront/
+                                        -
+                                            Ref: CloudFrontOriginAccessIdentityResource
+        DependsOn:
+            - S3486F821D
+    RestApi2EB2B1A40:
+        Type: 'AWS::ApiGateway::RestApi'
+        Properties:
+            EndpointConfiguration:
+                Types:
+                    - REGIONAL
+            Name: dev-Serverless-api
+    RestApi2Deployment8AC5F7BB9bffd5b7d46462b3936adf1405790067:
+        Type: 'AWS::ApiGateway::Deployment'
+        Properties:
+            RestApiId:
+                Ref: RestApi2EB2B1A40
+            Description: Automatically created by the RestApi construct
+        DependsOn:
+            - RestApi2testE484C0EB
+            - RestApi2testabc4AA6897A
+            - RestApi2testabcPOST1876E0BB
+    RestApi2DeploymentStagev10B2AC937:
+        Type: 'AWS::ApiGateway::Stage'
+        Properties:
+            RestApiId:
+                Ref: RestApi2EB2B1A40
+            DeploymentId:
+                Ref: RestApi2Deployment8AC5F7BB9bffd5b7d46462b3936adf1405790067
+            MethodSettings:
+                -
+                    HttpMethod: '*'
+                    LoggingLevel: INFO
+                    ResourcePath: /*
+            StageName: v1
+    RestApi2CloudWatchRoleCE2D27D6:
+        Type: 'AWS::IAM::Role'
+        Properties:
+            AssumeRolePolicyDocument:
+                Statement:
+                    -
+                        Action: 'sts:AssumeRole'
+                        Effect: Allow
+                        Principal:
+                            Service: apigateway.amazonaws.com
+                Version: '2012-10-17'
+            ManagedPolicyArns:
+                -
+                    'Fn::Join':
+                        - ''
+                        -
+                            - 'arn:'
+                            -
+                                Ref: 'AWS::Partition'
+                            - >-
+                                :iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs
+    RestApi2Account0F84FE1F:
+        Type: 'AWS::ApiGateway::Account'
+        Properties:
+            CloudWatchRoleArn:
+                'Fn::GetAtt':
+                    - RestApi2CloudWatchRoleCE2D27D6
+                    - Arn
+        DependsOn:
+            - RestApi2EB2B1A40
+    RestApi2testE484C0EB:
+        Type: 'AWS::ApiGateway::Resource'
+        Properties:
+            ParentId:
+                'Fn::GetAtt':
+                    - RestApi2EB2B1A40
+                    - RootResourceId
+            PathPart: test
+            RestApiId:
+                Ref: RestApi2EB2B1A40
+    RestApi2testabc4AA6897A:
+        Type: 'AWS::ApiGateway::Resource'
+        Properties:
+            ParentId:
+                Ref: RestApi2testE484C0EB
+            PathPart: abc
+            RestApiId:
+                Ref: RestApi2EB2B1A40
+    RestApi2testabcPOST1876E0BB:
+        Type: 'AWS::ApiGateway::Method'
+        Properties:
+            HttpMethod: POST
+            ResourceId:
+                Ref: RestApi2testabc4AA6897A
+            RestApiId:
+                Ref: RestApi2EB2B1A40
+            AuthorizationType: AWS_IAM
+            Integration:
+                IntegrationHttpMethod: POST
+                IntegrationResponses:
+                    -
+                        StatusCode: '200'
+                PassthroughBehavior: WHEN_NO_TEMPLATES
+                Type: AWS_PROXY
+                Uri:
+                    'Fn::Join':
+                        - ''
+                        -
+                            - 'arn:'
+                            -
+                                Ref: 'AWS::Partition'
+                            - ':apigateway:'
+                            -
+                                Ref: 'AWS::Region'
+                            - ':lambda:path/2015-03-31/functions/'
+                            -
+                                'Fn::GetAtt':
+                                    - AddNewWords10BCF361
+                                    - Arn
+                            - /invocations
+    AddNewWordsServiceRole47C26059:
+        Type: 'AWS::IAM::Role'
+        Properties:
+            AssumeRolePolicyDocument:
+                Statement:
+                    -
+                        Action: 'sts:AssumeRole'
+                        Effect: Allow
+                        Principal:
+                            Service: lambda.amazonaws.com
+                Version: '2012-10-17'
+            ManagedPolicyArns:
+                -
+                    'Fn::Join':
+                        - ''
+                        -
+                            - 'arn:'
+                            -
+                                Ref: 'AWS::Partition'
+                            - >-
+                                :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+    AddNewWords10BCF361:
+        Type: 'AWS::Lambda::Function'
+        Properties:
+            Code:
+                ZipFile: dummy
+            Handler: index.handler
+            Role:
+                'Fn::GetAtt':
+                    - AddNewWordsServiceRole47C26059
+                    - Arn
+            Runtime: nodejs8.10
+            Environment:
+                Variables:
+                    TABLE_WORD: dev-Serverless-Word
+            FunctionName: dev-Serverless-AddNewWords
+            MemorySize: 256
+            Timeout: 5
+        DependsOn:
+            - AddNewWordsServiceRole47C26059
+    AddNewWordsApiPermissionPOSTtestabc036BB3EB:
+        Type: 'AWS::Lambda::Permission'
+        Properties:
+            Action: 'lambda:InvokeFunction'
+            FunctionName:
+                Ref: AddNewWords10BCF361
+            Principal: apigateway.amazonaws.com
+            SourceArn:
+                'Fn::Join':
+                    - ''
+                    -
+                        - 'arn:'
+                        -
+                            Ref: 'AWS::Partition'
+                        - ':execute-api:'
+                        -
+                            Ref: 'AWS::Region'
+                        - ':'
+                        -
+                            Ref: 'AWS::AccountId'
+                        - ':'
+                        -
+                            Ref: RestApi2EB2B1A40
+                        - /
+                        -
+                            Ref: RestApi2DeploymentStagev10B2AC937
+                        - /POST/test/abc
+    AddNewWordsApiPermissionTestPOSTtestabc625E9C60:
+        Type: 'AWS::Lambda::Permission'
+        Properties:
+            Action: 'lambda:InvokeFunction'
+            FunctionName:
+                Ref: AddNewWords10BCF361
+            Principal: apigateway.amazonaws.com
+            SourceArn:
+                'Fn::Join':
+                    - ''
+                    -
+                        - 'arn:'
+                        -
+                            Ref: 'AWS::Partition'
+                        - ':execute-api:'
+                        -
+                            Ref: 'AWS::Region'
+                        - ':'
+                        -
+                            Ref: 'AWS::AccountId'
+                        - ':'
+                        -
+                            Ref: RestApi2EB2B1A40
+                        - /test-invoke-stage/POST/test/abc
+    CDKMetadata:
+        Type: 'AWS::CDK::Metadata'
+        Properties:
+            Modules: >-
+                @aws-cdk/assets=0.14.1,@aws-cdk/aws-apigateway=0.14.1,@aws-cdk/aws-applicationautoscaling=0.14.1,@aws-cdk/aws-cloudfront=0.14.1,@aws-cdk/aws-cloudwatch=0.14.1,@aws-cdk/aws-codebuild=0.14.1,@aws-cdk/aws-codecommit=0.14.1,@aws-cdk/aws-codepipeline=0.14.1,@aws-cdk/aws-codepipeline-api=0.14.1,@aws-cdk/aws-cognito=0.14.1,@aws-cdk/aws-dynamodb=0.14.1,@aws-cdk/aws-ec2=0.14.1,@aws-cdk/aws-events=0.14.1,@aws-cdk/aws-iam=0.14.1,@aws-cdk/aws-kms=0.14.1,@aws-cdk/aws-lambda=0.14.1,@aws-cdk/aws-s3=0.14.1,@aws-cdk/aws-s3-notifications=0.14.1,@aws-cdk/aws-sqs=0.14.1,@aws-cdk/cdk=0.14.1,@aws-cdk/cx-api=0.14.1,cdk=0.1.0,deepmerge=2.2.1,esprima=4.0.1,js-yaml=3.12.0,json5=1.0.1,minimist=1.2.0,strip-bom=3.0.0,tsconfig-paths=3.6.0
+Outputs:
+    RestApi2Endpoint575A9CAF:
+        Value:
+            'Fn::Join':
                 - ''
                 -
-                  -
-                    'Fn::GetAtt':
-                      - S3486F821D
-                      - Arn
-                  - /*
-        Version: '2012-10-17'
-  DistributionResource:
-    Type: 'AWS::CloudFront::Distribution'
-    Properties:
-      DistributionConfig:
-        DefaultCacheBehavior:
-          AllowedMethods:
-            - GET
-            - HEAD
-          ForwardedValues:
-            Cookies:
-              Forward: none
-            QueryString: false
-          TargetOriginId: S3Origin
-          ViewerProtocolPolicy: https-only
-        DefaultRootObject: index.html
-        Enabled: true
-        Origins:
-          -
-            DomainName:
-              'Fn::GetAtt':
-                - S3486F821D
-                - DomainName
-            Id: S3Origin
-            S3OriginConfig:
-              OriginAccessIdentity:
-                'Fn::Join':
-                  - ''
-                  -
-                    - origin-access-identity/cloudfront/
+                    - 'https://'
                     -
-                      Ref: CloudFrontOriginAccessIdentityResource
-    DependsOn:
-      - S3486F821D
-  RestApiRestApiEA0BECD9:
-    Type: 'AWS::ApiGateway::RestApi'
-    Properties:
-      EndpointConfiguration:
-        Types:
-          - REGIONAL
-      Name: dev-Serverless-api
-  RestApiRestApiDeploymentEE9500C594da77333e50630e6262117f01980fad:
-    Type: 'AWS::ApiGateway::Deployment'
-    Properties:
-      RestApiId:
-        Ref: RestApiRestApiEA0BECD9
-      Description: Automatically created by the RestApi construct
-    DependsOn:
-      - RestApiRestApitestF17F4543
-      - RestApiRestApitestabcB7D79D95
-      - RestApiRestApitestabcpostA4D8C436
-  RestApiRestApiDeploymentStageprod53181EA1:
-    Type: 'AWS::ApiGateway::Stage'
-    Properties:
-      RestApiId:
-        Ref: RestApiRestApiEA0BECD9
-      DeploymentId:
-        Ref: >-
-          RestApiRestApiDeploymentEE9500C594da77333e50630e6262117f01980fad
-      StageName: prod
-  RestApiRestApiCloudWatchRoleCAF836D0:
-    Type: 'AWS::IAM::Role'
-    Properties:
-      AssumeRolePolicyDocument:
-        Statement:
-          -
-            Action: 'sts:AssumeRole'
-            Effect: Allow
-            Principal:
-              Service: apigateway.amazonaws.com
-        Version: '2012-10-17'
-      ManagedPolicyArns:
-        -
-          'Fn::Join':
-            - ''
-            -
-              - 'arn:'
-              -
-                Ref: 'AWS::Partition'
-              - >-
-                :iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs
-  RestApiRestApiAccount768195D1:
-    Type: 'AWS::ApiGateway::Account'
-    Properties:
-      CloudWatchRoleArn:
-        'Fn::GetAtt':
-          - RestApiRestApiCloudWatchRoleCAF836D0
-          - Arn
-    DependsOn:
-      - RestApiRestApiEA0BECD9
-  RestApiRestApitestF17F4543:
-    Type: 'AWS::ApiGateway::Resource'
-    Properties:
-      ParentId:
-        'Fn::GetAtt':
-          - RestApiRestApiEA0BECD9
-          - RootResourceId
-      PathPart: test
-      RestApiId:
-        Ref: RestApiRestApiEA0BECD9
-  RestApiRestApitestabcB7D79D95:
-    Type: 'AWS::ApiGateway::Resource'
-    Properties:
-      ParentId:
-        Ref: RestApiRestApitestF17F4543
-      PathPart: abc
-      RestApiId:
-        Ref: RestApiRestApiEA0BECD9
-  RestApiRestApitestabcpostA4D8C436:
-    Type: 'AWS::ApiGateway::Method'
-    Properties:
-      HttpMethod: post
-      ResourceId:
-        Ref: RestApiRestApitestabcB7D79D95
-      RestApiId:
-        Ref: RestApiRestApiEA0BECD9
-      AuthorizationType: NONE
-      Integration:
-        IntegrationHttpMethod: POST
-        Type: AWS_PROXY
-        Uri:
-          'Fn::Join':
-            - ''
-            -
-              - 'arn:'
-              -
-                Ref: 'AWS::Partition'
-              - ':apigateway:'
-              -
-                Ref: 'AWS::Region'
-              - ':lambda:path/2015-03-31/functions/'
-              -
-                'Fn::GetAtt':
-                  - AddNewWords10BCF361
-                  - Arn
-              - /invocations
-  AddNewWordsServiceRole47C26059:
-    Type: 'AWS::IAM::Role'
-    Properties:
-      AssumeRolePolicyDocument:
-        Statement:
-          -
-            Action: 'sts:AssumeRole'
-            Effect: Allow
-            Principal:
-              Service: lambda.amazonaws.com
-        Version: '2012-10-17'
-      ManagedPolicyArns:
-        -
-          'Fn::Join':
-            - ''
-            -
-              - 'arn:'
-              -
-                Ref: 'AWS::Partition'
-              - >-
-                :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
-  AddNewWords10BCF361:
-    Type: 'AWS::Lambda::Function'
-    Properties:
-      Code:
-        S3Bucket: deployment-projects
-        S3Key: test/dummy.zip
-      Handler: index.handler
-      Role:
-        'Fn::GetAtt':
-          - AddNewWordsServiceRole47C26059
-          - Arn
-      Runtime: nodejs8.10
-      Environment:
-        Variables:
-          TABLE_WORD: dev-Serverless-E
-      FunctionName: dev-Serverless-E
-      MemorySize: 256
-      Timeout: 5
-    DependsOn:
-      - AddNewWordsServiceRole47C26059
-  AddNewWordsApiPermissionposttestabc8EE3987A:
-    Type: 'AWS::Lambda::Permission'
-    Properties:
-      Action: 'lambda:InvokeFunction'
-      FunctionName:
-        Ref: AddNewWords10BCF361
-      Principal: apigateway.amazonaws.com
-      SourceArn:
-        'Fn::Join':
-          - ''
-          -
-            - 'arn:'
-            -
-              Ref: 'AWS::Partition'
-            - ':execute-api:'
-            -
-              Ref: 'AWS::Region'
-            - ':'
-            -
-              Ref: 'AWS::AccountId'
-            - ':'
-            -
-              Ref: RestApiRestApiEA0BECD9
-            - /
-            -
-              Ref: RestApiRestApiDeploymentStageprod53181EA1
-            - /post/test/abc
-  AddNewWordsApiPermissionTestposttestabc499AC330:
-    Type: 'AWS::Lambda::Permission'
-    Properties:
-      Action: 'lambda:InvokeFunction'
-      FunctionName:
-        Ref: AddNewWords10BCF361
-      Principal: apigateway.amazonaws.com
-      SourceArn:
-        'Fn::Join':
-          - ''
-          -
-            - 'arn:'
-            -
-              Ref: 'AWS::Partition'
-            - ':execute-api:'
-            -
-              Ref: 'AWS::Region'
-            - ':'
-            -
-              Ref: 'AWS::AccountId'
-            - ':'
-            -
-              Ref: RestApiRestApiEA0BECD9
-            - /test-invoke-stage/post/test/abc
-  CDKMetadata:
-    Type: 'AWS::CDK::Metadata'
-    Properties:
-      Modules: >-
-        @aws-cdk/assets=0.14.1,@aws-cdk/aws-apigateway=0.14.1,@aws-cdk/aws-applicationautoscaling=0.14.1,@aws-cdk/aws-cloudfront=0.14.1,@aws-cdk/aws-cloudwatch=0.14.1,@aws-cdk/aws-codebuild=0.14.1,@aws-cdk/aws-codecommit=0.14.1,@aws-cdk/aws-codepipeline=0.14.1,@aws-cdk/aws-codepipeline-api=0.14.1,@aws-cdk/aws-cognito=0.14.1,@aws-cdk/aws-dynamodb=0.14.1,@aws-cdk/aws-ec2=0.14.1,@aws-cdk/aws-events=0.14.1,@aws-cdk/aws-iam=0.14.1,@aws-cdk/aws-kms=0.14.1,@aws-cdk/aws-lambda=0.14.1,@aws-cdk/aws-s3=0.14.1,@aws-cdk/aws-s3-notifications=0.14.1,@aws-cdk/aws-sqs=0.14.1,@aws-cdk/cdk=0.14.1,@aws-cdk/cx-api=0.14.1,cdk=0.1.0,deepmerge=2.2.1,esprima=4.0.1,js-yaml=3.12.0,json5=1.0.1,minimist=1.2.0,strip-bom=3.0.0,tsconfig-paths=3.6.0
-Outputs:
-  RestApiRestApiEndpointCA019919:
-    Value:
-      'Fn::Join':
-        - ''
-        -
-          - 'https://'
-          -
-            Ref: RestApiRestApiEA0BECD9
-          - .execute-api.
-          -
-            Ref: 'AWS::Region'
-          - .amazonaws.com/
-          -
-            Ref: RestApiRestApiDeploymentStageprod53181EA1
-          - /
-    Export:
-      Name: 'dev-Serverless-CloudFront:RestApiRestApiEndpointCA019919'
-  cloudFrontOriginAccessIdentityId:
-    Value:
-      Ref: CloudFrontOriginAccessIdentityResource
-    Export:
-      Name: cloudFrontOriginAccessIdentityId
-  cloudFrontOriginAccessIdentityS3CanonicalUserId:
-    Value:
-      'Fn::GetAtt':
-        - CloudFrontOriginAccessIdentityResource
-        - S3CanonicalUserId
-    Export:
-      Name: cloudFrontOriginAccessIdentityS3CanonicalUserId
+                        Ref: RestApi2EB2B1A40
+                    - .execute-api.
+                    -
+                        Ref: 'AWS::Region'
+                    - .amazonaws.com/
+                    -
+                        Ref: RestApi2DeploymentStagev10B2AC937
+                    - /
+        Export:
+            Name: 'dev-Serverless-CloudFront:RestApi2Endpoint575A9CAF'
+    cloudFrontOriginAccessIdentityId:
+        Value:
+            Ref: CloudFrontOriginAccessIdentityResource
+        Export:
+            Name: cloudFrontOriginAccessIdentityId
+    cloudFrontOriginAccessIdentityS3CanonicalUserId:
+        Value:
+            'Fn::GetAtt':
+                - CloudFrontOriginAccessIdentityResource
+                - S3CanonicalUserId
+        Export:
+            Name: cloudFrontOriginAccessIdentityS3CanonicalUserId

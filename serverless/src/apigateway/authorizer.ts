@@ -1,7 +1,6 @@
 import { Construct } from '@aws-cdk/cdk';
 import { cloudformation } from '@aws-cdk/aws-apigateway';
-import { prefix } from '@utils';
-import { CommonProps } from '@utils';
+import { prefix, CommonProps } from '@utils';
 
 export default (parent: Construct, props: Authorizer) => new cloudformation.AuthorizerResource(
   parent,
