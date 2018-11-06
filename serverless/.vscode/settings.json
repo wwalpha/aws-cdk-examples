@@ -1,11 +1,29 @@
 {
   "files.exclude": {
     "**/dist": true,
+    "**/.vscode": true,
     "**/.svn": true,
     "**/.hg": true,
     "**/CVS": true,
     "**/.DS_Store": true
   },
   "tslint.autoFixOnSave": true,
-  "tslint.run": "onSave"
+  "tslint.run": "onSave",
+  "yaml.schemas": {
+    "http://localhost:9988/sam.schema.json": [
+      "template.yaml",
+      "template.yml"
+    ]
+  },
+  "yaml.customTags": [
+    "!Ref scalar",
+    "!GetAtt",
+    "!Join scalar",
+    "!If",
+    "!Equals",
+    "!Sub scalar",
+    "!FindInMap",
+    "!ImportValue"
+  ],
+  "yaml.validate": false,
 }
