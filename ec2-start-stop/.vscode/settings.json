@@ -1,0 +1,11 @@
+{
+  "tslint.autoFixOnSave": true,
+  "tslint.run": "onSave",
+  "files.exclude": {
+    "**/.vscode": true,
+    "**/dist": true,
+    "**/*lock*": true,
+    "**/CVS": true,
+    "**/.DS_Store": true
+  }
+}

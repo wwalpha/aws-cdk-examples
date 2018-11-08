@@ -1,0 +1,31 @@
+{
+  "name": "ec2-start-stop",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "app": "tsc && cdk deploy",
+    "cfn": "tsc && cdk synth --output cfn"
+  },
+  "license": "ISC",
+  "devDependencies": {
+    "@types/js-yaml": "^3.11.2",
+    "@types/node": "^10.12.3",
+    "tsconfig-paths": "^3.6.0",
+    "tslint": "^5.11.0",
+    "tslint-config-airbnb": "^5.11.0",
+    "typescript": "^3.1.6"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-cloudwatch": "^0.15.1",
+    "@aws-cdk/aws-events": "^0.15.1",
+    "@aws-cdk/aws-iam": "^0.15.1",
+    "@aws-cdk/aws-lambda": "^0.15.1",
+    "@aws-cdk/cdk": "^0.15.1",
+    "@types/aws-lambda": "^8.10.15",
+    "aws-lambda": "^0.1.2",
+    "aws-sdk": "^2.351.0",
+    "js-yaml": "^3.12.0"
+  }
+}
