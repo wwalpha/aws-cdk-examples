@@ -26,11 +26,48 @@ export const handler = (event: any, _: any, callback: Callback) => {
 
 /** EC2停止 */
 const stop = async () => {
+  let instances: string[] = [];
+
+  // 環境変数未設定の場合、全EC2が対象になります。
+  if (process.env.STOP_INSTANCES) {
+    instances = (process.env.STOP_INSTANCES as string).split(',');
+  } else {
+    instances = await findTarget(16);
+  }
+
+  // 停止対象あり
+  if (instances.length > 0) {
+    await ec2.stopInstances({
+      InstanceIds: instances,
+      Force: true,
+    }).promise();
+  }
+};
+
+/** EC2起動 */
+const start = async () => {
+  let instances: string[] = [];
+
+  // 環境変数未設定の場合、全EC2が対象になります。
+  if (process.env.START_INSTANCES) {
+    instances = (process.env.START_INSTANCES as string).split(',');
+  } else {
+    instances = await findTarget(80);
+  }
+
+  // 起動対象あり
+  if (instances.length > 0) {
+    await ec2.startInstances({
+      InstanceIds: instances,
+    }).promise();
+  }
+};
+
+const findTarget = async (status: number): Promise<string[]> => {
+  const instances: string[] = [];
   const { Reservations: reservations } = await ec2.describeInstances().promise();
 
-  if (!reservations) return;
-
-  const stopInstances: string[] = [];
+  if (!reservations) return instances;
 
   reservations.forEach((item) => {
     if (!item.Instances) return;
@@ -44,28 +81,11 @@ const stop = async () => {
       // 80 : stopped
       if (!instance.State || !instance.InstanceId) return;
 
-      if (instance.State.Code === 16) {
-        stopInstances.push(instance.InstanceId);
+      if (instance.State.Code === status) {
+        instances.push(instance.InstanceId);
       }
     });
   });
 
-  // 停止対象あり
-  if (stopInstances.length > 0) {
-    await ec2.stopInstances({
-      InstanceIds: stopInstances,
-      Force: true,
-    }).promise();
-  }
-};
-
-/** EC2起動 */
-const start = async () => {
-  // 環境変数から起動対象を取得する
-  const instances = (process.env.START_INSTANCES as string).split(',');
-
-  // EC2起動する
-  await ec2.startInstances({
-    InstanceIds: instances,
-  }).promise();
+  return instances;
 };

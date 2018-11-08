@@ -3,6 +3,11 @@ import { Function, Code, Runtime, FunctionRef } from '@aws-cdk/aws-lambda';
 import { join } from 'path';
 import { cloudwatch } from '@utils/policy';
 import { Role, ServicePrincipal, Policy, PolicyStatement, PolicyStatementEffect } from '@aws-cdk/aws-iam';
+import { Rules } from '@cloudwatch';
+import { safeLoad } from 'js-yaml';
+import { readFileSync } from 'fs';
+
+const config: Rules = safeLoad(readFileSync(join('config.yml'), 'utf8'));
 
 export default (parent: Construct): FunctionRef => {
   const role = new Role(parent, 'LambdaRole', {
@@ -30,7 +35,8 @@ export default (parent: Construct): FunctionRef => {
     timeout: 5,
     functionName: 'EC2-Auto-StartStop',
     environment: {
-      START_INSTANCES: '',
+      START_INSTANCES: config.Start && config.Start.Targets && config.Start.Targets.join(','),
+      STOP_INSTANCES: config.Stop && config.Stop.Targets && config.Stop.Targets.join(','),
     },
     role,
   });

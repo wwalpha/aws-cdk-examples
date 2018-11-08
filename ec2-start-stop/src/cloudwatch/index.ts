@@ -9,4 +9,5 @@ export interface Rule {
   Name: string;
   Schedule: string;
   Description?: string;
+  Targets?: string[];
 }

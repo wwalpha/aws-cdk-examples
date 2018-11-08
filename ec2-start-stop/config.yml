@@ -2,7 +2,11 @@ Start:
   Name: EC2-Start
   Schedule: 0 0 ? * MON-FRI *
   Description: 月～金、９時に定時起動
+  Targets:
+    - i-xxxxxxx
 Stop:
   Name: EC2-Stop
   Schedule: 0/60 12-15 ? * * *
   Description: 全てのEC2、月～日、２１～２４時、１時間ごとEC2の状態をチェックし、停止する
+  Targets:
+    - i-xxxxxxx
