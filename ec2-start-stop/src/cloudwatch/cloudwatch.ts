@@ -1,31 +1,46 @@
 import { Construct } from '@aws-cdk/cdk';
 import { EventRule } from '@aws-cdk/aws-events';
 import { FunctionRef } from '@aws-cdk/aws-lambda';
+import { safeLoad } from 'js-yaml';
+import { readFileSync } from 'fs';
+import { join } from 'path';
+import { Rules } from '@cloudwatch';
+
+const config: Rules = safeLoad(readFileSync(join('config.yml'), 'utf8'));
 
 export default (parent: Construct, func: FunctionRef) => {
 
-  const start = new EventRule(parent, 'StartRule', {
-    enabled: true,
-    ruleName: 'EC2-Start',
-    scheduleExpression: '0 0 ? * MON-FRI *',
-  });
+  if (config.Start) {
+    const { Name, Description, Schedule } = config.Start;
 
-  start.addTarget(func, {
-    jsonTemplate: JSON.stringify({
-      action: 'start',
-    }),
-  });
+    const start = new EventRule(parent, 'StartRule', {
+      enabled: true,
+      ruleName: Name,
+      scheduleExpression: `cron(${Schedule})`,
+      description: Description,
+    });
 
-  const stop = new EventRule(parent, 'StopRule', {
-    enabled: true,
-    ruleName: 'EC2-Stop',
-    targets: [func],
-    scheduleExpression: '0/60 12-15 ? * * *',
-  });
+    start.addTarget(func, {
+      jsonTemplate: JSON.stringify({
+        action: 'start',
+      }),
+    });
+  }
 
-  stop.addTarget(func, {
-    jsonTemplate: JSON.stringify({
-      action: 'stop',
-    }),
-  });
+  if (config.Stop) {
+    const { Name, Description, Schedule } = config.Stop;
+
+    const stop = new EventRule(parent, 'StopRule', {
+      enabled: true,
+      ruleName: Name,
+      scheduleExpression: `cron(${Schedule})`,
+      description: Description,
+    });
+
+    stop.addTarget(func, {
+      jsonTemplate: JSON.stringify({
+        action: 'stop',
+      }),
+    });
+  }
 };
