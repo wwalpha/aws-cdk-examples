@@ -1,6 +1,6 @@
-import { CommonProps } from '@utils';
+import { StackProps } from '@aws-cdk/cdk';
 
 export { default as CodeCommit } from './codeCommit';
 
-export interface CodeCommitInput extends CommonProps {
+export interface CodeCommitInput extends StackProps {
 }

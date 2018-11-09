@@ -2,7 +2,6 @@
 // import { cloudformation } from '@aws-cdk/aws-s3';
 // import { S3Input, NewBucket, S3Output } from ".";
 
-
 // // export default class S3Stack extends Stack {
 // //   public readonly output: S3Output
 

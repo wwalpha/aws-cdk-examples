@@ -3,7 +3,7 @@ import { CodeBuildRole, RepoProject, CodeBuildInput } from '.';
 import { Project } from '@aws-cdk/aws-codebuild';
 
 export default (parent: Construct, props: CodeBuildInput): Project => {
-  const role = CodeBuildRole(parent, props);
+  const role = CodeBuildRole(parent);
 
   return RepoProject(parent, props, role);
 };

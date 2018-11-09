@@ -1,14 +1,12 @@
 import { RestApi, EndpointType, MethodLoggingLevel } from '@aws-cdk/aws-apigateway';
 import { Construct } from '@aws-cdk/cdk';
-import { ApiGatewayInput } from '.';
-import { prefix } from '@utils';
-// import { PolicyDocument, PolicyStatement, PolicyStatementEffect } from '@aws-cdk/aws-iam';
+import { getResourceName } from '@const';
 
-export default (parent: Construct, props: ApiGatewayInput) => new RestApi(
+export default (parent: Construct) => new RestApi(
   parent,
-  'RestApi2',
+  'RestApiResource',
   {
-    restApiName: `${prefix(props)}-api`,
+    restApiName: getResourceName('api'),
     // endpointTypes
     endpointTypes: [
       EndpointType.Regional,

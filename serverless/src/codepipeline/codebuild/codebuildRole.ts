@@ -1,11 +1,10 @@
 import { Construct } from '@aws-cdk/cdk';
 import { Role, Policy, ServicePrincipal, PolicyStatement, PolicyStatementEffect } from '@aws-cdk/aws-iam';
-import { prefix } from '@utils';
-import { CodeBuildInput } from '.';
+import { getRoleName, getResourceName } from '@const';
 
-export default (parent: Construct, props: CodeBuildInput): Role => {
+export default (parent: Construct): Role => {
   const role = new Role(parent, 'CodeBuildRole', {
-    roleName: `${prefix(props)}-CodeBuildRole`,
+    roleName: getRoleName('CodeBuild', 'Execute'),
     assumedBy: new ServicePrincipal('codebuild.amazonaws.com'),
   });
 
@@ -23,7 +22,7 @@ export default (parent: Construct, props: CodeBuildInput): Role => {
     .addResource('arn:aws:s3:::codepipeline-ap-northeast-1-*');
 
   const policy = new Policy(parent, 'CodeBuildPolicy', {
-    policyName: `${prefix(props)}-CodeBuildPolicy`,
+    policyName: getResourceName('CodeBuildPolicy'),
     statements: [stmt1, stmt2],
   });
 

@@ -10,7 +10,7 @@ export default class CognitoStack extends Stack {
     super(parent, name, props);
 
     // User Pool
-    const userPool = UserPool(this, props);
+    const userPool = UserPool(this);
     // User Pool Client
     const userPoolClient = UserPoolClient(this, userPool.ref);
 
@@ -26,14 +26,10 @@ export default class CognitoStack extends Stack {
     IdentityPoolRoleAttachment(this, {
       identityPoolId: identityPool.ref,
       authenticated: AuthenticatedRole(this, identityPool.ref, {
-        envType: props.envType,
-        project: props.project,
         roleName: 'AuthenticatedRole',
         policyName: 'AuthenticatedPolicy',
       }).roleArn,
       unauthenticated: UnauthenticatedRole(this, identityPool.ref, {
-        envType: props.envType,
-        project: props.project,
         roleName: 'UnauthenticatedRole',
         policyName: 'UnauthenticatedPolicy',
       }).roleArn,

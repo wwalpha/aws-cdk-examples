@@ -1,10 +1,10 @@
 import { Construct, AwsRegion, AwsAccountId } from '@aws-cdk/cdk';
 import { Role, Policy, ServicePrincipal, PolicyStatement, PolicyStatementEffect } from '@aws-cdk/aws-iam';
 import { RoleProps } from '.';
-import { prefix } from '@utils';
+import { getResourceName } from '@const';
 
 const getRole = (parent: Construct, props: RoleProps): Role => new Role(parent, `${props.roleName}Resource`, {
-  roleName: `${prefix(props)}-AppSync-${props.roleName}Role`,
+  roleName: getResourceName('AppSync', props.roleName),
   assumedBy: new ServicePrincipal('appsync.amazonaws.com'),
 });
 

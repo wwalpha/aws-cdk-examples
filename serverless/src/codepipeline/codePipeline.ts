@@ -1,7 +1,7 @@
 import { Stack, App } from '@aws-cdk/cdk';
 import { Pipeline } from '@aws-cdk/aws-codepipeline';
-import { prefix } from '@utils';
 import { CodeCommit, CodeBuild, CodePipelineOutput, CodePipelineInput } from '.';
+import { getProjectName } from '@const';
 
 export default class CodePipelineStack extends Stack {
   public readonly output: CodePipelineOutput;
@@ -10,7 +10,7 @@ export default class CodePipelineStack extends Stack {
     super(parent, name, props);
 
     // Repository
-    const repo = CodeCommit(this, props);
+    const repo = CodeCommit(this);
 
     const project = CodeBuild(this, {
       ...props,
@@ -19,7 +19,7 @@ export default class CodePipelineStack extends Stack {
 
     // Pipeline
     const pipeline = new Pipeline(this, 'CodePipeline', {
-      pipelineName: prefix(props),
+      pipelineName: getProjectName(),
     });
 
     const sourceStage = pipeline.addStage('Source');

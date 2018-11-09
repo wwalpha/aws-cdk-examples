@@ -1,6 +1,4 @@
-import { CommonProps } from '@utils';
+import { StackProps } from "@aws-cdk/cdk";
 
-// export { default as CodeDeploy } from './codeDeploy';
-
-export interface CodeDeployInput extends CommonProps {
+export interface CodeDeployInput extends StackProps {
 }

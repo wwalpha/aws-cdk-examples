@@ -1,95 +1,66 @@
-import { Construct } from '@aws-cdk/cdk';
+import { Output, Stack, App } from '@aws-cdk/cdk';
 import { ApiGatewayInput, ApiGatewayOutput, Api } from '.';
 import { Schema, Type, safeLoad } from 'js-yaml';
 import { readFileSync } from 'fs';
 import { SAM, ApiProperties } from 'typings/sam';
-import { LAMBDA_FILE } from '@const';
-import { getFunction } from '@lambda';
+import { LAMBDA_FILE, getResourceName } from '@const';
 import { LambdaIntegration, IRestApiResource, RestApi, AuthorizationType, PassthroughBehavior } from '@aws-cdk/aws-apigateway';
+import { getFunction } from '@utils/lambda';
 
-export default (parent: Construct, props: ApiGatewayInput): ApiGatewayOutput => {
-  const api = Api(parent, props);
+export default class ApiGatewayStack extends Stack {
+  public readonly apiOutput: ApiGatewayOutput;
 
-  const subType = new Type('!Sub', {
-    kind: 'scalar',
-    resolve: data => (data),
-  });
+  constructor(parent: App, name: string, props: ApiGatewayInput) {
+    super(parent, name, props);
 
-  const config: SAM = safeLoad(readFileSync(LAMBDA_FILE, 'utf-8'), {
-    schema: Schema.create([subType]),
-  });
+    const api = Api(this);
 
-  Object.keys(config.Resources).forEach((key) => {
-    const resource = config.Resources[key];
+    const subType = new Type('!Sub', {
+      kind: 'scalar',
+      resolve: data => (data),
+    });
 
-    // Lambda Function以外処理しない
-    if ('AWS::Serverless::Function' !== resource.Type) return;
+    const config: SAM = safeLoad(readFileSync(LAMBDA_FILE, 'utf-8'), {
+      schema: Schema.create([subType]),
+    });
 
-    const { Events } = resource.Properties;
-    // Event情報なし、対象外
-    if (!Events) return;
+    Object.keys(config.Resources).forEach((key) => {
+      const resource = config.Resources[key];
 
-    const event = Object.keys(Events).find(item => Events[item].Type === 'Api');
-    // Api Eventなし
-    if (!event) return;
+      // Lambda Function以外処理しない
+      if ('AWS::Serverless::Function' !== resource.Type) return;
 
-    // Lambda Function作成
-    const funcRef = getFunction(parent, props, key, resource);
+      const { Events } = resource.Properties;
+      // Event情報なし、対象外
+      if (!Events) return;
 
-    // Lambda Function追加
-    addMethod(api, Events[event].Properties, new LambdaIntegration(funcRef, {
-      integrationResponses: [{
-        statusCode: '200',
-      }],
-      passthroughBehavior: PassthroughBehavior.WhenNoTemplates,
-    }));
-  });
+      const event = Object.keys(Events).find(item => Events[item].Type === 'Api');
+      // Api Eventなし
+      if (!event) return;
 
-  // config.
-  // const authorizer = Authorizer(parent, {
-  //   restApiId: api.restApiId,
-  //   ...props,
-  // });
+      // Lambda Function作成
+      const funcRef = getFunction(this, key, resource);
 
-  // const lambda = new Function(parent, 'xxxx', {
-  //   code: dummyCode(parent),
-  //   handler: 'app.handler',
-  //   runtime: Runtime.NodeJS810,
-  // });
-  // const process = api.root.addResource('process');
-  // process.addMethod(
-  //   HttpMethod.GET, new LambdaIntegration(lambda, {
+      // Lambda Function追加
+      addMethod(api, Events[event].Properties, new LambdaIntegration(funcRef, {
+        integrationResponses: [{
+          statusCode: '200',
+        }],
+        passthroughBehavior: PassthroughBehavior.WhenNoTemplates,
+      }));
+    });
 
-  //   }), {
-  //     authorizationType: 'COGNITO_USER_POOLS' as AuthorizationType,
-  //     apiKeyRequired: false,
-  //     authorizerId: authorizer.ref,
-  //   });
+    // Ouput
+    new Output(this, 'RestApiId', {
+      export: getResourceName('RestApiId'),
+      value: api.restApiId,
+    });
 
-  // upload.addMethod(HttpMethod.POST, new LambdaIntegration(functionRef(parent, props.lambda['ImageToWord'])), {
-  //   authorizationType: AuthorizationType.IAM,
-  // });
-
-  // upload.addMethod(HttpMethod.PUT, new AwsIntegration({
-  //   service: 's3',
-  //   path: '{bucket}/users/{userId}/{item}',
-  //   options: {
-  //     credentialsRole: uploadRole(parent, props),
-  //     requestParameters: {
-  //       'integration.request.header.bucket': "'test'"
-  //     },
-  //     integrationResponses: [{
-  //       statusCode: '200',
-  //     }],
-  //   }
-  // }), IAM);
-  // new Output(parent, 'RestApi', {
-  //   export: `${prefix(props)}-RestApi`,
-  //   value: api.restApiId,
-  // });
-
-  return { restApi: api };
-};
+    this.apiOutput = {
+      restApi: api,
+    };
+  }
+}
 
 const apis = {} as any;
 

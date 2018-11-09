@@ -1,6 +1,7 @@
-import { CommonProps } from '@utils';
+import { StackProps } from '@aws-cdk/cdk';
 
-export interface DynamodbInput extends CommonProps {
+
+export interface DynamodbInput extends StackProps {
 }
 
 export interface DynamodbOutput {

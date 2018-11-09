@@ -1,6 +1,6 @@
-import { CommonProps } from '..';
+import { StackProps } from '@aws-cdk/cdk';
 
-export interface RoleProps extends CommonProps {
+export interface RoleProps extends StackProps {
   roleName: string;
 }
 

@@ -1,9 +1,8 @@
 import { cloudformation } from '@aws-cdk/aws-cognito';
 import { Construct } from '@aws-cdk/cdk';
-import { CognitoInput } from '.';
-import { prefix } from '@utils';
+import { getResourceName } from '@const';
 
-export default (parent: Construct, props: CognitoInput) => new cloudformation.UserPoolResource(
+export default (parent: Construct) => new cloudformation.UserPoolResource(
   parent,
   'UserPool',
   {
@@ -45,7 +44,7 @@ export default (parent: Construct, props: CognitoInput) => new cloudformation.Us
       },
     },
     // プール名
-    userPoolName: prefix(props),
+    userPoolName: getResourceName('UserPool'),
     // ユーザ属性定義
     schema: [
       {

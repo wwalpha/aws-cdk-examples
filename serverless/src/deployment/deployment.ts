@@ -2,7 +2,7 @@ import { Stack, App } from '@aws-cdk/cdk';
 import { BucketDeployment, Source } from '@aws-cdk/aws-s3-deployment';
 import { DeploymentOutput, DeploymentInput } from '.';
 import { Bucket } from '@aws-cdk/aws-s3';
-import { prefix } from '@utils';
+import { getBucketName } from '@const';
 
 export default class DeploymentStack extends Stack {
   public readonly output: DeploymentOutput;
@@ -11,7 +11,7 @@ export default class DeploymentStack extends Stack {
     super(parent, name, props);
 
     const bucket = new Bucket(this, 'Deployment-Bucket', {
-      bucketName: `${prefix}-deployment`,
+      bucketName: getBucketName('deploymennt'),
     });
 
     new BucketDeployment(this, 'DeployWebsite', {

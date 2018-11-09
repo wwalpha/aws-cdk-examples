@@ -1,7 +1,7 @@
 import { Role, Policy, FederatedPrincipal, PolicyStatement, PolicyStatementEffect } from '@aws-cdk/aws-iam';
 import { Construct } from '@aws-cdk/cdk';
 import { RoleProps } from '.';
-import { prefix } from '@utils';
+import { getResourceName, getRoleName } from '@const';
 
 /** Cognito未認証ロール */
 export const unauthenticatedRole = (parent: Construct, identityPool: string, props: UnauthenticatedRoleProps): Role => {
@@ -15,7 +15,7 @@ export const unauthenticatedRole = (parent: Construct, identityPool: string, pro
   );
 
   const role = new Role(parent, props.roleName, {
-    roleName: `${prefix(props)}-Cognito-${props.roleName}`,
+    roleName: getRoleName('Coginito', props.roleName),
     assumedBy: principal,
   });
 
@@ -24,7 +24,7 @@ export const unauthenticatedRole = (parent: Construct, identityPool: string, pro
   policyStmt.addResource('*');
 
   const policy = new Policy(parent, props.policyName, {
-    policyName: `${prefix(props)}-${props.policyName}`,
+    policyName: getResourceName(props.policyName),
     statements: [policyStmt],
   });
 
@@ -45,7 +45,7 @@ export const authenticatedRole = (parent: Construct, identityPool: string, props
   );
 
   const role = new Role(parent, props.roleName, {
-    roleName: `${prefix(props)}-Cognito-${props.roleName}`,
+    roleName: getRoleName('Coginito', props.roleName),
     assumedBy: principal,
   });
 
@@ -54,7 +54,7 @@ export const authenticatedRole = (parent: Construct, identityPool: string, props
   stmt.addResource('*');
 
   const policy = new Policy(parent, props.policyName, {
-    policyName: `${prefix(props)}-${props.policyName}`,
+    policyName: getResourceName(props.policyName),
     statements: [stmt],
   });
 

@@ -1,13 +1,13 @@
-import { Construct } from '@aws-cdk/cdk';
+import { Construct, StackProps } from '@aws-cdk/cdk';
 import { cloudformation } from '@aws-cdk/aws-dynamodb';
-import { CommonProps } from '@utils';
-import { prefix } from '@utils';
+
+import { getResourceName } from '@const';
 
 export default (parent: Construct, props: TableInput) => new cloudformation.TableResource(
   parent,
   `${props.table.tableName}Resource`,
   {
-    tableName: `${prefix(props)}-${props.table.tableName}`,
+    tableName: props.table.tableName && getResourceName(props.table.tableName as string),
     keySchema: props.table.keySchema,
     attributeDefinitions: props.table.attributeDefinitions,
     globalSecondaryIndexes: props.table.globalSecondaryIndexes,
@@ -21,6 +21,6 @@ export default (parent: Construct, props: TableInput) => new cloudformation.Tabl
   },
 );
 
-export interface TableInput extends CommonProps {
-  table: cloudformation.TableResourceProps
+export interface TableInput extends StackProps {
+  table: cloudformation.TableResourceProps;
 }

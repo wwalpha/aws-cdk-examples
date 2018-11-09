@@ -1,15 +1,14 @@
 import { Construct } from '@aws-cdk/cdk';
 import { cloudformation } from '@aws-cdk/aws-cloudfront';
-import { S3Output } from './s3';
 
-export default (parent: Construct, props: S3Output, identity: string) => new cloudformation.DistributionResource(
+export default (parent: Construct, domainName: string, identity: string) => new cloudformation.DistributionResource(
   parent,
   'DistributionResource',
   {
     distributionConfig: {
       origins: [
         {
-          domainName: props.bucketDomainName,
+          domainName,
           id: 'S3Origin',
           s3OriginConfig: {
             originAccessIdentity: `origin-access-identity/cloudfront/${identity}`,

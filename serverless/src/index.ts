@@ -4,5 +4,4 @@ export { default as DynamodbStack } from './dynamodb/dynamodb';
 export { default as CloudFrontStack } from './cloudfront/cloudfront';
 // export { default as CodeBuild } from './codebuild/codebuild';
 export { default as CodePipelineStack } from './codepipeline/codePipeline';
-export { default as Lambda } from './lambda/lambda';
-export { default as ApiGateway } from './apigateway/apigateway';
+export { default as ApiGatewayStack } from './apigateway/apigateway';

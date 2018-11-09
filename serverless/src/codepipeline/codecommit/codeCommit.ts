@@ -1,12 +1,12 @@
 import { Construct } from '@aws-cdk/cdk';
 import { Repository } from '@aws-cdk/aws-codecommit';
-import { CodeCommitInput } from '.';
+import { getProjectName } from '@const';
 
-export default (parent: Construct, props: CodeCommitInput): Repository => {
+export default (parent: Construct): Repository => {
 
   // Repository作成
   const repo = new Repository(parent, 'Repository', {
-    repositoryName: props.project,
+    repositoryName: getProjectName(),
   });
 
   return repo;

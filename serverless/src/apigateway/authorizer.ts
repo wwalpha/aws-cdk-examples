@@ -1,12 +1,12 @@
 import { Construct } from '@aws-cdk/cdk';
 import { cloudformation } from '@aws-cdk/aws-apigateway';
-import { prefix, CommonProps } from '@utils';
+import { getResourceName } from '@const';
 
 export default (parent: Construct, props: Authorizer) => new cloudformation.AuthorizerResource(
   parent,
   'AuthorizerResource',
   {
-    name: `${prefix(props)}-Authorizer`,
+    name: getResourceName('Authorizer'),
     restApiId: props.restApiId,
     type: 'COGNITO_USER_POOLS',
     // authorizerName: `${prefix(props)}-Authorizer`,
@@ -17,7 +17,7 @@ export default (parent: Construct, props: Authorizer) => new cloudformation.Auth
   },
 );
 
-export interface Authorizer extends CommonProps {
+export interface Authorizer {
   restApiId: string;
   userPoolArn: string;
 }

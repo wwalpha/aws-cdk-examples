@@ -1,28 +1,28 @@
 import { Construct } from '@aws-cdk/cdk';
-import { CommonProps, prefix } from '@utils';
 import { Resource, FunctionEnvironment } from 'typings/sam';
 import { Code, Runtime, Function } from '@aws-cdk/aws-lambda';
+import { getResourceName } from '@const';
 
 /** SAM Templateの元でLambda Function作成 */
-export const getFunction = (parent: Construct, props: CommonProps, name: string, { Properties }: Resource) => new Function(parent, name, {
+export const getFunction = (parent: Construct, name: string, { Properties }: Resource) => new Function(parent, name, {
   code: Code.inline('dummy'),
   handler: Properties.Handler,
   runtime: getRuntime(Properties.Runtime),
-  functionName: `${prefix(props)}-${getName(Properties.FunctionName)}`,
+  functionName: getResourceName(getName(Properties.FunctionName)),
   timeout: Properties.Timeout,
   memorySize: Properties.MemorySize,
-  environment: getEnvironment(props, Properties.Environment),
+  environment: getEnvironment(Properties.Environment),
   description: Properties.Description,
   // deadLetterQueue: Properties.DeadLetterQueue,
 });
 
 /** 環境設定 */
-const getEnvironment = (props: CommonProps, env?: FunctionEnvironment) => {
+const getEnvironment = (env?: FunctionEnvironment) => {
   if (!env || !env.Variables) return undefined;
 
   Object.keys(env.Variables).forEach((key) => {
     if (env.Variables[key]) {
-      env.Variables[key] = `${prefix(props)}-${getName(env.Variables[key])}`;
+      env.Variables[key] = getResourceName(getName(env.Variables[key]));
     }
   });
 
