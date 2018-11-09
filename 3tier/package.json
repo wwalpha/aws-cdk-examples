@@ -1,0 +1,26 @@
+{
+  "name": "3tier",
+  "version": "0.1.0",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "app": "tsc && cdk deploy",
+    "cfn": "tsc && cdk synth --output cfn"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^3.11.2",
+    "@types/jszip": "^3.1.4",
+    "@types/node": "^10.12.3",
+    "jszip": "^3.1.5",
+    "tsconfig-paths": "^3.6.0",
+    "tslint": "^5.11.0",
+    "tslint-config-airbnb": "^5.11.0",
+    "typescript": "^3.1.6"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-ec2": "^0.15.2",
+    "@aws-cdk/cdk": "^0.15.2",
+    "aws-sdk": "^2.320.0",
+    "js-yaml": "^3.12.0"
+  }
+}

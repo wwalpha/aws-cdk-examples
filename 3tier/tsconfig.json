@@ -1,0 +1,63 @@
+{
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    "target": "esnext",
+    "module": "commonjs",
+    "lib": [
+      "es2015",
+      "es2015.promise"
+    ],
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": false,
+    "inlineSourceMap": true,
+    "inlineSources": true,
+    "experimentalDecorators": true,
+    "strictPropertyInitialization": false,
+    "baseUrl": ".",
+    "paths": {
+      "@ec2": [
+        "./src/ec2"
+      ],
+      "@cloudfront": [
+        "./src/cloudfront"
+      ],
+      "@cognito": [
+        "./src/cognito"
+      ],
+      "@utils/*": [
+        "./src/utils/*"
+      ],
+      "@utils": [
+        "./src/utils/index"
+      ],
+      "@const": [
+        "./src/const"
+      ],
+      "@lambda": [
+        "./src/lambda"
+      ],
+      "@codepipeline": [
+        "./src/codepipeline"
+      ],
+      "@dynamodb": [
+        "./src/dynamodb"
+      ]
+    }
+  },
+  "compileOnSave": true,
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "**/*.spec.ts"
+  ]
+}

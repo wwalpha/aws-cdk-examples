@@ -1,0 +1,10 @@
+{
+  "app": "node -r ./tsconfig-paths.js dist/app.js",
+  "context": {
+    "availability-zones:account=562849865336:region=ap-northeast-1": [
+      "ap-northeast-1a",
+      "ap-northeast-1c",
+      "ap-northeast-1d"
+    ]
+  }
+}
