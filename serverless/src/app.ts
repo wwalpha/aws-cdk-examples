@@ -1,13 +1,13 @@
 import { App, Stack, AwsAccountId, AwsRegion, AwsStackId, AwsStackName, StackProps } from '@aws-cdk/cdk';
-// import { CloudFrontStack } from '.';
-// import CognitoStack from './cognito/cognito';
-// import CodePipelineStack from './codepipeline/codePipeline';
-import { CognitoStack, CloudFrontStack, ApiGatewayStack, CodePipelineStack } from '.';
 import { getResourceName, getProjectName } from '@const';
-
-// import { Stack, App, AwsAccountId, AwsRegion, AwsStackId, AwsStackName } from '@aws-cdk/cdk';
-// import { S3Stack } from '.';
-// import { StackProps } from './utils';
+import { LambdaWarmup } from './warmup';
+import jszip = require('jszip');
+import { readFileSync, writeFileSync } from 'fs';
+import { join } from 'path';
+import { ApiGatewayStack } from '@api';
+import { CognitoStack } from '@cognito';
+import { CloudFrontStack } from '@cloudfront';
+import { CodePipelineStack } from '@codepipeline';
 
 class RootStack extends Stack {
 
@@ -33,6 +33,8 @@ class RootStack extends Stack {
     new CloudFrontStack(parent, getResourceName('CloudFront'), props);
     // Code Pipeline
     new CodePipelineStack(parent, getResourceName('CodePipeline'), props);
+
+    LambdaWarmup(this);
   }
 }
 
@@ -44,4 +46,20 @@ class RootApp extends App {
   }
 }
 
-new RootApp().run();
+// Upload用ソースZip化
+const source2Zip = async () => {
+  const zip = new jszip();
+
+  zip.file('index.js', readFileSync(join(__dirname, 'warmup/app.js')));
+
+  const value = await zip.generateAsync({
+    type: 'uint8array',
+    compression: 'DEFLATE',
+  });
+
+  writeFileSync(join(__dirname, 'warmup/app.zip'), value);
+};
+
+source2Zip().then(() => {
+  new RootApp().run();
+});

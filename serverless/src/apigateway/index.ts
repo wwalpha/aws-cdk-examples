@@ -1,6 +1,8 @@
-
 import { IRestApiResource, Resource, RestApi } from '@aws-cdk/aws-apigateway';
 import { StackProps } from '@aws-cdk/cdk';
+
+export { default as ApiGatewayStack } from './apigateway';
+
 export { default as Api } from './api';
 export { default as Authorizer } from './authorizer';
 

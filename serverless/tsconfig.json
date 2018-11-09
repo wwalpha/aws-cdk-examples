@@ -29,6 +29,9 @@
       "@cloudfront": [
         "./src/cloudfront"
       ],
+      "@cognito": [
+        "./src/cognito"
+      ],
       "@utils/*": [
         "./src/utils/*"
       ],
@@ -40,6 +43,9 @@
       ],
       "@lambda": [
         "./src/lambda"
+      ],
+      "@codepipeline": [
+        "./src/codepipeline"
       ],
       "@dynamodb": [
         "./src/dynamodb"

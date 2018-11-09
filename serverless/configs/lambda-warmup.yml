@@ -1,0 +1,10 @@
+Rule:
+  Name: LambdaWarmup
+  Schedule: 0/10 21-15 ? * * *
+  Description: 8-24時、除外対象以外のLambdaは呼び出す
+
+Lambda:
+  FunctionName: LambdaWarmup
+  MemorySize: 256
+  Timeout: 5
+  TargetEnv: prod

@@ -69,3 +69,12 @@ export const s3 = (parent: Construct, roleName: string, bucketName?: string) => 
       .addResource(`arn:aws:s3:::${bucketName === undefined ? '*' : bucketName}/*`),
   ],
 });
+
+export const warmup = (parent: Construct, roleName: string) => new Policy(parent, `${roleName}-Lambda`, {
+  statements: [
+    new PolicyStatement(PolicyStatementEffect.Allow)
+      .addAction('lambda:ListFunctions')
+      .addAction('lambda:InvokeFunction')
+      .addResource(`arn:aws:${new AwsRegion()}:${new AwsAccountId()}:function:*`),
+  ],
+});

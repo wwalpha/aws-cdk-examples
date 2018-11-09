@@ -1,5 +1,7 @@
 import { StackProps } from '@aws-cdk/cdk';
 
+export { default as CloudFrontStack } from './cloudfront';
+
 export { default as CloudFrontOriginAccessIdentity } from './cloudFrontOriginAccessIdentity';
 export { default as Distribution } from './distribution';
 export { default as ResourcePolicy } from './bucketPolicy';
