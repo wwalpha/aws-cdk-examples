@@ -5,6 +5,12 @@
       "ap-northeast-1a",
       "ap-northeast-1c",
       "ap-northeast-1d"
-    ]
+    ],
+    "availability-zones:account=311178267809:region=ap-northeast-1": [
+      "ap-northeast-1a",
+      "ap-northeast-1c",
+      "ap-northeast-1d"
+    ],
+    "ssm:account=311178267809:parameterName=/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2:region=ap-northeast-1": "ami-00a5245b4816c38e6"
   }
 }

@@ -10,7 +10,10 @@ export interface NetworkProps extends StackProps {
 }
 
 export interface ELBProps {
-  internetFacing: boolean;
-  deletionProtection: boolean;
+  internetFacing?: boolean;
+  deletionProtection?: boolean;
+  ami: string;
   port: number;
+  elbName: string;
+  asgName: string;
 }

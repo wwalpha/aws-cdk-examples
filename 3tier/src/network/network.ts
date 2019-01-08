@@ -1,6 +1,7 @@
 import { Stack, App, StackProps } from '@aws-cdk/cdk';
 import { VpcNetwork, SecurityGroup, SgProps } from '@network';
 import { VpcNetworkRefProps, TcpPort, AnyIPv4 } from '@aws-cdk/aws-ec2';
+import { getResourceName } from '@const';
 
 export default class NetworkStack extends Stack {
 
@@ -15,31 +16,33 @@ export default class NetworkStack extends Stack {
 
     // セキュリティグループ作成
     // internet load blancer
-    const internetSg = SecurityGroup(this, vpc, 'internet-sg');
+    const internetSg = SecurityGroup(this, vpc, getResourceName('internet'));
     internetSg.addIngressRule(new AnyIPv4(), new TcpPort(80));
 
     // web
-    const webSg = SecurityGroup(this, vpc, 'web-sg');
+    const webSg = SecurityGroup(this, vpc, getResourceName('web'));
     webSg.addIngressRule(internetSg, new TcpPort(80));
 
     // intenal load blancer
-    const internalSg = SecurityGroup(this, vpc, 'internal-sg');
+    const internalSg = SecurityGroup(this, vpc, getResourceName('internal'));
     internalSg.addIngressRule(new AnyIPv4(), new TcpPort(8080));
 
     // application
-    const appSg = SecurityGroup(this, vpc, 'app-sg');
+    const appSg = SecurityGroup(this, vpc, getResourceName('app'));
     appSg.addIngressRule(internalSg, new TcpPort(8080));
 
     // database
-    const dbSg = SecurityGroup(this, vpc, 'db-sg');
+    const dbSg = SecurityGroup(this, vpc, getResourceName('db'));
     dbSg.addIngressRule(appSg, new TcpPort(5432));
 
     // export
     this.vpc = vpc.export();
-    this.sg.internet = internetSg.export();
-    this.sg.internal = internalSg.export();
-    this.sg.web = webSg.export();
-    this.sg.app = appSg.export();
-    this.sg.db = dbSg.export();
+    this.sg = {
+      internet: internetSg.export(),
+      internal: internalSg.export(),
+      web: webSg.export(),
+      app: appSg.export(),
+      db: dbSg.export(),
+    };
   }
 }

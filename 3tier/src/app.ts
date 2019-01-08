@@ -1,6 +1,8 @@
 import { App } from '@aws-cdk/cdk';
 // import { EC2Stack } from '@ec2';
 import { NetworkStack } from '@network';
+import { getResourceName } from '@const';
+import { EC2Stack } from '@ec2';
 // import { getResourceName } from '@const';
 
 // class RootStack extends Stack {
@@ -26,13 +28,12 @@ class RootApp extends App {
   constructor() {
     super();
 
-    new NetworkStack(this);
-    // const network = new NetworkStack(this);
+    const network = new NetworkStack(this, getResourceName('Network'));
 
-    // const ec2 = new EC2Stack(this, 'ec2', {
-    //   sg: network.sg,
-    //   vpc: network.vpc,
-    // });
+    new EC2Stack(this, getResourceName('EC2'), {
+      sg: network.sg,
+      vpc: network.vpc,
+    });
 
   }
 }
