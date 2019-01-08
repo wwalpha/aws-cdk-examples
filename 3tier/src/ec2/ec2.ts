@@ -1,23 +1,80 @@
-import { Stack, App, StackProps } from "@aws-cdk/cdk";
-import { VpcNetwork, SecurityGroup } from "@ec2";
-import { AmazonLinuxImage, AmazonLinuxGeneration, AmazonLinuxVirt, AmazonLinuxEdition, AmazonLinuxStorage } from "@aws-cdk/aws-ec2";
+import { Stack, App, Construct } from '@aws-cdk/cdk';
+import { NetworkProps, ELBProps } from '@ec2';
+import { ApplicationLoadBalancer, ApplicationLoadBalancerRefProps } from '@aws-cdk/aws-elasticloadbalancingv2';
+import { AutoScalingGroup } from '@aws-cdk/aws-autoscaling';
+import { VpcNetworkRef, SecurityGroupRef, InstanceTypePair, InstanceClass, InstanceSize, AmazonLinuxImage, IMachineImageSource } from '@aws-cdk/aws-ec2';
 
 export default class EC2Stack extends Stack {
 
-  constructor(parent?: App, name?: string, props?: StackProps) {
+  public readonly elbProps: ApplicationLoadBalancerRefProps;
+
+  constructor(parent?: App, name?: string, props?: NetworkProps) {
     super(parent, name, props);
 
-    // VPC作成
-    const vpc = VpcNetwork(this);
+    if (!props) return;
 
-    // セキュリティグループ作成
-    SecurityGroup(this, vpc);
+    const vpc = VpcNetworkRef.import(this, 'vpc', props.vpc);
+    const internetSg = SecurityGroupRef.import(this, 'internet-sg', props.sg.internet);
 
-    new AmazonLinuxImage({
-      generation: AmazonLinuxGeneration.AmazonLinux2,
-      virtualization: AmazonLinuxVirt.HVM,
-      edition: AmazonLinuxEdition.Standard,
-      storage: AmazonLinuxStorage.EBS,
-    })
+    // internet LB + AutoScaling
+    const internetLB = creatAutoScalingWithELB(
+      this,
+      vpc,
+      internetSg,
+      {
+        port: 80,
+        deletionProtection: true,
+        internetFacing: true,
+      });
+
+    // internal LB + AutoScaling
+    creatAutoScalingWithELB(
+      this,
+      vpc,
+      internetSg,
+      {
+        port: 8080,
+        deletionProtection: true,
+        internetFacing: true,
+      });
+
+    this.elbProps = internetLB.export();
   }
 }
+
+const creatAutoScalingWithELB = (parent: Construct, vpc: VpcNetworkRef, sg: SecurityGroupRef, elbProps: ELBProps) => {
+  // internet load blancer
+  const appLB = new ApplicationLoadBalancer(parent, `LB-${sg.id}`, {
+    vpc,
+    internetFacing: elbProps.internetFacing,
+    deletionProtection: elbProps.deletionProtection,
+    securityGroup: sg,
+  });
+
+  // lisnter:80
+  const internetLS = appLB.addListener('internet-listener', {
+    open: true,
+    port: elbProps.port,
+    // defaultTargetGroups
+  });
+
+  const asg = new AutoScalingGroup(parent, 'asg', {
+    vpc,
+    // i2.micro
+    instanceType: new InstanceTypePair(InstanceClass.Burstable2, InstanceSize.Micro),
+    // get the latest Amazon Linux image
+    machineImage: new AmazonLinuxImage({
+
+    }),
+    maxSize: 4,
+    minSize: 0,
+    desiredCapacity: 2,
+  });
+
+  internetLS.addTargets('fleet', {
+    port: elbProps.port,
+    targets: [asg],
+  });
+
+  return appLB;
+};

@@ -5,23 +5,29 @@ export default (parent: Construct) => new VpcNetwork(
   parent,
   'VPC',
   {
-    cidr: '10.100.0.0/16',
+    cidr: '10.101.0.0/16',
+    maxAZs: 2,
+    enableDnsHostnames: true,
+    enableDnsSupport: true,
     subnetConfiguration: [
       {
         cidrMask: 24,
-        name: 'Ingress',
+        name: 'web',
         subnetType: SubnetType.Public,
       },
       {
         cidrMask: 24,
-        name: 'App',
+        name: 'app',
         subnetType: SubnetType.Private,
       },
       {
-        cidrMask: 28,
-        name: 'DB',
+        cidrMask: 24,
+        name: 'db',
         subnetType: SubnetType.Isolated,
-      }
-    ]
+      },
+    ],
+    tags: {
+      Name: '3tier-vpc',
+    },
   },
 );

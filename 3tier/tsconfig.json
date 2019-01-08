@@ -26,8 +26,8 @@
       "@ec2": [
         "./src/ec2"
       ],
-      "@cloudfront": [
-        "./src/cloudfront"
+      "@network": [
+        "./src/network"
       ],
       "@cognito": [
         "./src/cognito"
