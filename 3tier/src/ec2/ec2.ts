@@ -1,19 +1,20 @@
 import { Stack, App, Construct } from '@aws-cdk/cdk';
 import { NetworkProps, ELBProps } from '@ec2';
-import { ApplicationLoadBalancer, ApplicationLoadBalancerRefProps } from '@aws-cdk/aws-elasticloadbalancingv2';
+import { ApplicationLoadBalancer, ApplicationLoadBalancerRefProps, } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { AutoScalingGroup } from '@aws-cdk/aws-autoscaling';
-import { VpcNetworkRef, SecurityGroupRef, InstanceTypePair, InstanceClass, InstanceSize, AmazonLinuxImage, GenericLinuxImage } from '@aws-cdk/aws-ec2';
+import { VpcNetworkRef, SecurityGroupRef, InstanceTypePair, InstanceClass, InstanceSize, GenericLinuxImage } from '@aws-cdk/aws-ec2';
 import { getResourceName } from '@const';
 
 export default class EC2Stack extends Stack {
 
-  public readonly elbProps: ApplicationLoadBalancerRefProps;
+  public readonly albRefProps: ApplicationLoadBalancerRefProps;
 
   constructor(parent?: App, name?: string, props?: NetworkProps) {
     super(parent, name, props);
 
     if (!props) return;
 
+    console.log(111);
     const vpc = VpcNetworkRef.import(this, 'vpc', props.vpc);
     const internetSg = SecurityGroupRef.import(this, 'internet-sg', props.sg.internet);
 
@@ -42,10 +43,11 @@ export default class EC2Stack extends Stack {
         asgName: getResourceName('app-asg'),
         ami: 'ami-0392d5a72b96eb147',
         port: 8080,
-        internetFacing: true,
+        internetFacing: false,
       });
 
-    this.elbProps = internetLB.export();
+    this.albRefProps = internetLB.export();
+
   }
 }
 
@@ -56,7 +58,9 @@ const creatAutoScalingWithELB = (parent: Construct, vpc: VpcNetworkRef, sg: Secu
     internetFacing: elbProps.internetFacing,
     deletionProtection: elbProps.deletionProtection,
     securityGroup: sg,
+    loadBalancerName: elbProps.elbName,
   });
+
 
   // lisnter:80
   const internetLS = appLB.addListener('listener', {

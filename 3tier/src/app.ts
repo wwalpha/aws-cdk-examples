@@ -3,6 +3,7 @@ import { App } from '@aws-cdk/cdk';
 import { NetworkStack } from '@network';
 import { getResourceName } from '@const';
 import { EC2Stack } from '@ec2';
+import CloudFrontStack from './cloudfront/cloudfront';
 // import { getResourceName } from '@const';
 
 // class RootStack extends Stack {
@@ -30,11 +31,14 @@ class RootApp extends App {
 
     const network = new NetworkStack(this, getResourceName('Network'));
 
-    new EC2Stack(this, getResourceName('EC2'), {
+    const ec2 = new EC2Stack(this, getResourceName('EC2'), {
       sg: network.sg,
       vpc: network.vpc,
     });
 
+    new CloudFrontStack(this, getResourceName('CDN'), {
+      albRefProps: ec2.albRefProps,
+    });
   }
 }
 
