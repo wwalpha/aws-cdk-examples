@@ -4,6 +4,7 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
+    "debug": "tsc && cdk deploy -v",
     "app": "tsc && cdk deploy",
     "cfn": "tsc && cdk synth --output cfn"
   },
@@ -21,6 +22,7 @@
     "@aws-cdk/assets": "^0.21.0",
     "@aws-cdk/aws-autoscaling": "^0.21.0",
     "@aws-cdk/aws-autoscaling-api": "^0.21.0",
+    "@aws-cdk/aws-cloudfront": "^0.21.0",
     "@aws-cdk/aws-cloudwatch": "^0.21.0",
     "@aws-cdk/aws-codedeploy-api": "^0.21.0",
     "@aws-cdk/aws-codepipeline-api": "^0.21.0",
@@ -32,8 +34,10 @@
     "@aws-cdk/aws-kms": "^0.21.0",
     "@aws-cdk/aws-lambda": "^0.21.0",
     "@aws-cdk/aws-logs": "^0.21.0",
+    "@aws-cdk/aws-rds": "^0.22.0",
     "@aws-cdk/aws-route53": "^0.21.0",
     "@aws-cdk/aws-s3": "^0.21.0",
+    "@aws-cdk/aws-s3-deployment": "^0.21.0",
     "@aws-cdk/aws-s3-notifications": "^0.21.0",
     "@aws-cdk/aws-sns": "^0.21.0",
     "@aws-cdk/aws-sqs": "^0.21.0",

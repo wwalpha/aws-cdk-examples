@@ -19,7 +19,7 @@ export default (parent: Construct) => new VpcNetwork(
       {
         cidrMask: 24,
         name: 'app',
-        subnetType: SubnetType.Private,
+        subnetType: SubnetType.Isolated,
       },
       {
         cidrMask: 24,

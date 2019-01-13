@@ -1,12 +1,11 @@
-import { Construct } from "@aws-cdk/cdk";
-import { BucketDeployment, Source } from "@aws-cdk/aws-s3-deployment";
-import { Bucket } from "@aws-cdk/aws-s3";
-import { getResourceName } from "@const";
-
+import { Construct } from '@aws-cdk/cdk';
+import { BucketDeployment, Source } from '@aws-cdk/aws-s3-deployment';
+import { Bucket } from '@aws-cdk/aws-s3';
+import { getBucketName } from '@const';
 
 export default (parent: Construct) => {
   const s3 = new Bucket(parent, 'Bucket', {
-    bucketName: getResourceName('Bucket'),
+    bucketName: getBucketName('distribution'),
     publicReadAccess: false,
     versioned: false,
   });
@@ -17,4 +16,4 @@ export default (parent: Construct) => {
   });
 
   return s3;
-}
+};

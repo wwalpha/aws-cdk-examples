@@ -2,7 +2,7 @@ Resources:
   Bucket83908E77:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: dev-3Tier-Bucket
+      BucketName: dev-3tier-distribution
     DeletionPolicy: Retain
     Metadata:
       aws:cdk:path: dev-3Tier-CDN/Bucket/Resource
@@ -216,7 +216,10 @@ Resources:
               OriginReadTimeout: 30
               OriginSSLProtocols:
                 - TLSv1.2
-            DomainName: dev-3-dev3T-18I1P1Q19UFV5-1134451892.ap-northeast-1.elb.amazonaws.com
+            DomainName:
+              Fn::GetAtt:
+                - dev3TierinternetC5AC4D78
+                - DNSName
             Id: origin2
         PriceClass: PriceClass_100
         ViewerCertificate:

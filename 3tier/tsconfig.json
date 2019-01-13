@@ -23,32 +23,23 @@
     "strictPropertyInitialization": false,
     "baseUrl": ".",
     "paths": {
-      "@ec2": [
-        "./src/ec2"
+      "@web": [
+        "./src/web"
       ],
-      "@network": [
-        "./src/network"
+      "@app": [
+        "./src/app/index"
       ],
-      "@cognito": [
-        "./src/cognito"
+      "@db": [
+        "./src/db"
       ],
-      "@utils/*": [
-        "./src/utils/*"
+      "@cloudfront": [
+        "./src/cloudfront"
       ],
       "@utils": [
-        "./src/utils/index"
+        "./src/utils"
       ],
       "@const": [
         "./src/const"
-      ],
-      "@lambda": [
-        "./src/lambda"
-      ],
-      "@codepipeline": [
-        "./src/codepipeline"
-      ],
-      "@dynamodb": [
-        "./src/dynamodb"
       ]
     }
   },

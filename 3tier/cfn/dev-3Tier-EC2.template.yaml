@@ -372,3 +372,10 @@ Outputs:
       Ref: dev3TierinternetC5AC4D78
     Export:
       Name: dev-3Tier-EC2:dev3TierinternetLoadBalancerArn71C7804B
+  albDnsName:
+    Value:
+      Fn::GetAtt:
+        - dev3TierinternetC5AC4D78
+        - DNSName
+    Export:
+      Name: dev-3Tier-elb-dnsName
