@@ -23,6 +23,12 @@
     "strictPropertyInitialization": false,
     "baseUrl": ".",
     "paths": {
+      "@network": [
+        "./src/network"
+      ],
+      "@asg": [
+        "./src/asg"
+      ],
       "@web": [
         "./src/web"
       ],
