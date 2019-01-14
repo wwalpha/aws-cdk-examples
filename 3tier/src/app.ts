@@ -4,20 +4,25 @@ import CloudFrontStack from './cloudfront/cloudfront';
 import WebStack from '@web';
 import AppStack from '@app';
 import DBStack from '@db';
+import RootStack from './root';
 
 class RootApp extends App {
   constructor() {
     super();
 
-    const web = new WebStack(this, getResourceName('Web'));
+    const root = new RootStack(this, getResourceName('Root'));
+
+    const web = new WebStack(this, getResourceName('Web'), {
+      vpc: root.props.vpc,
+    });
 
     const app = new AppStack(this, getResourceName('App'), {
-      vpc: web.props.vpc,
+      vpc: root.props.vpc,
       webSg: web.props.webSg,
     });
 
     new DBStack(this, getResourceName('DB'), {
-      vpc: web.props.vpc,
+      vpc: root.props.vpc,
       appSg: app.props.appSg,
     });
 

@@ -28,7 +28,7 @@ export default class CloudFrontStack extends Stack {
         },
         {
           customOriginSource: {
-            domainName: props.dnsName,
+            domainName: props.dnsName.toString(),
           },
           behaviors: customBehaviors(),
         },

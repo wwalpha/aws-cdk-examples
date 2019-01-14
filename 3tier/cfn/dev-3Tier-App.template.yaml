@@ -17,7 +17,7 @@ Resources:
         - Key: Name
           Value: dev-3Tier-internal-sg
       VpcId:
-        Fn::ImportValue: dev-3Tier-Web:VPCVpcId2F75874A
+        Fn::ImportValue: dev-3Tier-Root:VPCVpcId2F75874A
     Metadata:
       aws:cdk:path: dev-3Tier-App/dev-3Tier-internal-sg/Resource
   dev3Tierinternalsgfromdev3TierAppwebSgF4A86D658080690BDD37:
@@ -46,7 +46,16 @@ Resources:
             - dev3Tierinternalsg54F660BD
             - GroupId
       Subnets:
-        []
+        - Fn::Select:
+            - 2
+            - Fn::Split:
+                - ","
+                - Fn::ImportValue: dev-3Tier-Root:VPCIsolatedSubnetIDs0BAB2DBD
+        - Fn::Select:
+            - 3
+            - Fn::Split:
+                - ","
+                - Fn::ImportValue: dev-3Tier-Root:VPCIsolatedSubnetIDs0BAB2DBD
       Type: application
     Metadata:
       aws:cdk:path: dev-3Tier-App/dev-3Tier-internal/Resource
@@ -71,7 +80,7 @@ Resources:
       Port: 8080
       Protocol: HTTP
       VpcId:
-        Fn::ImportValue: dev-3Tier-Web:VPCVpcId2F75874A
+        Fn::ImportValue: dev-3Tier-Root:VPCVpcId2F75874A
       TargetGroupAttributes:
         []
       Targets:
@@ -93,7 +102,7 @@ Resources:
         - Key: Name
           Value: dev-3Tier-App/dev-3Tier-app-asg
       VpcId:
-        Fn::ImportValue: dev-3Tier-Web:VPCVpcId2F75874A
+        Fn::ImportValue: dev-3Tier-Root:VPCVpcId2F75874A
     Metadata:
       aws:cdk:path: dev-3Tier-App/dev-3Tier-app-asg/InstanceSecurityGroup/Resource
   dev3TierappasgInstanceSecurityGroupfromdev3TierAppdev3Tierinternalsg26D01EA48080D47181F2:
@@ -136,7 +145,7 @@ Resources:
   dev3TierappasgLaunchConfigDCF74DDB:
     Type: AWS::AutoScaling::LaunchConfiguration
     Properties:
-      ImageId: ami-0392d5a72b96eb147
+      ImageId: ami-00a5245b4816c38e6
       InstanceType: t2.micro
       IamInstanceProfile:
         Ref: dev3TierappasgInstanceProfile4513567D
@@ -166,7 +175,16 @@ Resources:
       TargetGroupARNs:
         - Ref: dev3TierinternallistenerfleetGroup7C212424
       VPCZoneIdentifier:
-        []
+        - Fn::Select:
+            - 2
+            - Fn::Split:
+                - ","
+                - Fn::ImportValue: dev-3Tier-Root:VPCIsolatedSubnetIDs0BAB2DBD
+        - Fn::Select:
+            - 3
+            - Fn::Split:
+                - ","
+                - Fn::ImportValue: dev-3Tier-Root:VPCIsolatedSubnetIDs0BAB2DBD
     UpdatePolicy:
       AutoScalingScheduledAction:
         IgnoreUnmodifiedGroupSizeProperties: true
@@ -186,7 +204,7 @@ Resources:
         - Key: Name
           Value: dev-3Tier-app
       VpcId:
-        Fn::ImportValue: dev-3Tier-Web:VPCVpcId2F75874A
+        Fn::ImportValue: dev-3Tier-Root:VPCVpcId2F75874A
     Metadata:
       aws:cdk:path: dev-3Tier-App/dev-3Tier-app/Resource
   dev3Tierappfromdev3TierAppdev3Tierinternalsg26D01EA480801FA748EC:

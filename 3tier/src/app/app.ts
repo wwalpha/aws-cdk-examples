@@ -27,6 +27,9 @@ export default class AppStack extends Stack {
       vpc,
       internalSg,
       {
+        vpcPlacement: {
+          subnetName: 'app',
+        },
         elbName: getResourceName('internal'),
         asgName: getResourceName('app-asg'),
         ami: 'ami-0392d5a72b96eb147',

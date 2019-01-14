@@ -6,7 +6,6 @@ export default (parent: Construct) => new VpcNetwork(
   'VPC',
   {
     cidr: '10.101.0.0/16',
-    natGateways: 0,
     maxAZs: 2,
     enableDnsHostnames: true,
     enableDnsSupport: true,

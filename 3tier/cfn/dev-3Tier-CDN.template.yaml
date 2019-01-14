@@ -217,9 +217,7 @@ Resources:
               OriginSSLProtocols:
                 - TLSv1.2
             DomainName:
-              Fn::GetAtt:
-                - dev3TierinternetC5AC4D78
-                - DNSName
+              Fn::ImportValue: dev-3Tier-DNSName
             Id: origin2
         PriceClass: PriceClass_100
         ViewerCertificate:

@@ -13,7 +13,7 @@ Resources:
         - Key: Name
           Value: dev-3Tier-db
       VpcId:
-        Fn::ImportValue: dev-3Tier-Web:VPCVpcId2F75874A
+        Fn::ImportValue: dev-3Tier-Root:VPCVpcId2F75874A
     Metadata:
       aws:cdk:path: dev-3Tier-DB/dev-3Tier-db/Resource
   dev3Tierdbfromdev3TierDBappSgF396B4085432B7E6F427:

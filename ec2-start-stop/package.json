@@ -5,6 +5,7 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
+    "boostrap": "cdk bootstrap 311178267809/ap-northeast-1",
     "app": "tsc && cdk deploy",
     "cfn": "tsc && cdk synth --output cfn"
   },
@@ -20,11 +21,11 @@
     "typescript": "^3.1.6"
   },
   "dependencies": {
-    "@aws-cdk/aws-cloudwatch": "^0.15.1",
-    "@aws-cdk/aws-events": "^0.15.1",
-    "@aws-cdk/aws-iam": "^0.15.1",
-    "@aws-cdk/aws-lambda": "^0.15.1",
-    "@aws-cdk/cdk": "^0.15.1",
+    "@aws-cdk/aws-cloudwatch": "^0.21.0",
+    "@aws-cdk/aws-events": "^0.21.0",
+    "@aws-cdk/aws-iam": "^0.21.0",
+    "@aws-cdk/aws-lambda": "^0.21.0",
+    "@aws-cdk/cdk": "^0.21.0",
     "@types/aws-lambda": "^8.10.15",
     "aws-lambda": "^0.1.2",
     "aws-sdk": "^2.351.0",
