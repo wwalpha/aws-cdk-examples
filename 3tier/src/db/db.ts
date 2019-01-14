@@ -1,7 +1,7 @@
 import { Stack, App } from '@aws-cdk/cdk';
-import { TcpPort, VpcNetworkRef, SecurityGroupRef } from '@aws-cdk/aws-ec2';
+import { TcpPort, VpcNetwork, SecurityGroup } from '@aws-cdk/aws-ec2';
 import { getResourceName } from '@const';
-import { SecurityGroup } from '@utils';
+import { createSecurityGroup } from '@utils';
 import { DBStackProps } from '@db';
 
 export default class DBStack extends Stack {
@@ -12,11 +12,12 @@ export default class DBStack extends Stack {
     if (!props) return;
 
     // VPC作成
-    const vpc = VpcNetworkRef.import(this, 'vpc', props.vpc);
-    const appSg = SecurityGroupRef.import(this, 'appSg', props.appSg);
+    const vpc = VpcNetwork.import(this, 'vpc', props.vpc);
+
+    const appSg = SecurityGroup.import(this, 'appSg', props.appSg);
 
     // database
-    const dbSg = SecurityGroup(this, vpc, getResourceName('db'));
+    const dbSg = createSecurityGroup(this, vpc, getResourceName('db'));
     dbSg.addIngressRule(appSg, new TcpPort(5432));
 
     // DatabaseCluster

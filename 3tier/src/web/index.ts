@@ -1,16 +1,16 @@
-import { SecurityGroupRefProps, VpcNetworkRefProps } from '@aws-cdk/aws-ec2';
-import { StackProps, FnImportValue } from '@aws-cdk/cdk';
+import { VpcNetworkImportProps, SecurityGroupImportProps } from '@aws-cdk/aws-ec2';
+import { StackProps } from '@aws-cdk/cdk';
 
 export { default } from './web';
 
 export interface WebProps {
   // ELBのDNS URL
-  dnsName: FnImportValue;
+  dnsName: string;
   // WEBのセキュリティーグループ
-  webSg: SecurityGroupRefProps;
+  webSg: SecurityGroupImportProps;
 }
 
 export interface WebStackProps extends StackProps {
   // VPC
-  vpc: VpcNetworkRefProps;
+  vpc: VpcNetworkImportProps;
 }

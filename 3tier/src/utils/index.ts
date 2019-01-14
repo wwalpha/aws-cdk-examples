@@ -1,3 +1,3 @@
-export { default as SecurityGroup } from './sg';
+export { default as createSecurityGroup } from './sg';
 
 export * from './elb';

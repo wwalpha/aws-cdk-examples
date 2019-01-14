@@ -1,5 +1,8 @@
 import { Stack, App } from '@aws-cdk/cdk';
-import { CloudFrontWebDistribution, CloudFrontAllowedMethods, CfnCloudFrontOriginAccessIdentity, Behavior, ViewerProtocolPolicy, CloudFrontAllowedCachedMethods } from '@aws-cdk/aws-cloudfront';
+import {
+  CloudFrontWebDistribution, CloudFrontAllowedMethods, CfnCloudFrontOriginAccessIdentity,
+  Behavior, ViewerProtocolPolicy, CloudFrontAllowedCachedMethods, PriceClass,
+} from '@aws-cdk/aws-cloudfront';
 import { CfProps, S3 } from '.';
 
 export default class CloudFrontStack extends Stack {
@@ -14,6 +17,11 @@ export default class CloudFrontStack extends Stack {
 
     // CloudFront
     new CloudFrontWebDistribution(this, 'distribution', {
+      priceClass: PriceClass.PriceClassAll,
+      enableIpV6: false,
+      loggingConfig: {
+
+      },
       originConfigs: [
         {
           s3OriginSource: {

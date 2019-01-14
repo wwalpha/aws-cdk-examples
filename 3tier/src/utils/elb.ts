@@ -1,5 +1,5 @@
 import { Construct } from '@aws-cdk/cdk';
-import { VpcNetworkRef, SecurityGroupRef, InstanceTypePair, InstanceClass, InstanceSize, AmazonLinuxImage, VpcPlacementStrategy } from '@aws-cdk/aws-ec2';
+import { InstanceTypePair, InstanceClass, InstanceSize, AmazonLinuxImage, VpcPlacementStrategy, IVpcNetwork, ISecurityGroup } from '@aws-cdk/aws-ec2';
 import { ApplicationLoadBalancer } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { AutoScalingGroup } from '@aws-cdk/aws-autoscaling';
 
@@ -13,7 +13,7 @@ export interface ELBProps {
   asgName: string;
 }
 
-export const creatAutoScalingWithELB = (parent: Construct, vpc: VpcNetworkRef, sg: SecurityGroupRef, elbProps: ELBProps) => {
+export const creatAutoScalingWithELB = (parent: Construct, vpc: IVpcNetwork, sg: ISecurityGroup, elbProps: ELBProps) => {
   // internet load blancer
   const appLB = new ApplicationLoadBalancer(parent, elbProps.elbName, {
     vpc,

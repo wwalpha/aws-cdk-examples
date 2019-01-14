@@ -1,22 +1,22 @@
 import { Stack, App, Output } from '@aws-cdk/cdk';
-import { TcpPort, AnyIPv4, VpcNetworkRef, SubnetType } from '@aws-cdk/aws-ec2';
+import { TcpPort, AnyIPv4, SubnetType, VpcNetwork } from '@aws-cdk/aws-ec2';
 import { getResourceName } from '@const';
 import { WebProps, WebStackProps } from '.';
-import { SecurityGroup, creatAutoScalingWithELB } from '@utils';
+import { createSecurityGroup, creatAutoScalingWithELB } from '@utils';
 
 export default class WebStack extends Stack {
 
-  public readonly props: WebProps;
+  public readonly outputs: WebProps;
 
   constructor(parent?: App, name?: string, props?: WebStackProps) {
     super(parent, name, props);
     if (!props) return;
 
     // VPC
-    const vpc = VpcNetworkRef.import(this, 'vpc', props.vpc);
+    const vpc = VpcNetwork.import(this, 'vpc', props.vpc);
     // セキュリティグループ作成
     // internet load blancer
-    const elbSg = SecurityGroup(this, vpc, getResourceName('internet-sg'));
+    const elbSg = createSecurityGroup(this, vpc, getResourceName('internet-sg'));
     elbSg.addIngressRule(new AnyIPv4(), new TcpPort(80));
 
     // internet LB + AutoScaling
@@ -36,10 +36,10 @@ export default class WebStack extends Stack {
       });
 
     // web
-    const webSg = SecurityGroup(this, vpc, getResourceName('web'));
+    const webSg = createSecurityGroup(this, vpc, getResourceName('web'));
     webSg.addIngressRule(elbSg, new TcpPort(80));
 
-    this.props = {
+    this.outputs = {
       dnsName: new Output(this, 'DnsName', {
         export: getResourceName('DNSName'),
         value: alb.dnsName,

@@ -1,12 +1,12 @@
 import { Stack, App } from '@aws-cdk/cdk';
-import { TcpPort, VpcNetworkRef, SecurityGroupRef } from '@aws-cdk/aws-ec2';
+import { TcpPort, VpcNetwork, SecurityGroup } from '@aws-cdk/aws-ec2';
 import { getResourceName } from '@const';
-import { SecurityGroup, creatAutoScalingWithELB } from '@utils';
+import { createSecurityGroup, creatAutoScalingWithELB } from '@utils';
 import { AppStackProps, AppProps } from '@app';
 
 export default class AppStack extends Stack {
 
-  public readonly props: AppProps;
+  public readonly outputs: AppProps;
 
   constructor(parent?: App, name?: string, props?: AppStackProps) {
     super(parent, name, props);
@@ -14,11 +14,11 @@ export default class AppStack extends Stack {
     if (!props) return;
 
     // VPC作成
-    const vpc = VpcNetworkRef.import(this, 'vpc', props.vpc);
-    const webSg = SecurityGroupRef.import(this, 'webSg', props.webSg);
+    const vpc = VpcNetwork.import(this, 'vpc', props.vpc);
+    const webSg = SecurityGroup.import(this, 'webSg', props.webSg);
 
     // intenal load blancer
-    const internalSg = SecurityGroup(this, vpc, getResourceName('internal-sg'));
+    const internalSg = createSecurityGroup(this, vpc, getResourceName('internal-sg'));
     internalSg.addIngressRule(webSg, new TcpPort(8080));
 
     // internal LB + AutoScaling
@@ -38,10 +38,10 @@ export default class AppStack extends Stack {
       });
 
     // application
-    const appSg = SecurityGroup(this, vpc, getResourceName('app'));
+    const appSg = createSecurityGroup(this, vpc, getResourceName('app'));
     appSg.addIngressRule(internalSg, new TcpPort(8080));
 
-    this.props = {
+    this.outputs = {
       appSg: appSg.export(),
     };
   }

@@ -1,7 +1,7 @@
 import { Construct } from '@aws-cdk/cdk';
-import { SecurityGroup, VpcNetworkRef } from '@aws-cdk/aws-ec2';
+import { SecurityGroup, IVpcNetwork } from '@aws-cdk/aws-ec2';
 
-export default (parent: Construct, vpc: VpcNetworkRef, name: string): SecurityGroup => new SecurityGroup(
+export default (parent: Construct, vpc: IVpcNetwork, name: string): SecurityGroup => new SecurityGroup(
   parent,
   name,
   {

@@ -3,12 +3,12 @@ import { WebProps, VpcNetwork } from '.';
 
 export default class RootStack extends Stack {
 
-  public readonly props: WebProps;
+  public readonly outputs: WebProps;
 
   constructor(parent?: App, name?: string, props?: StackProps) {
     super(parent, name, props);
 
-    this.props = {
+    this.outputs = {
       vpc: VpcNetwork(this).export(),
     };
   }

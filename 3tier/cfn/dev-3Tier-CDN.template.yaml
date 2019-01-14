@@ -129,6 +129,8 @@ Resources:
       - CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF
     Metadata:
       aws:cdk:path: dev-3Tier-CDN/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource
+      aws:asset:path: D:\Code\Project\aws\aws-cdk-examples\3tier\node_modules\@aws-cdk\aws-s3-deployment\lambda\bundle.zip
+      aws:asset:property: Code
   OAI:
     Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
     Properties:
@@ -136,6 +138,11 @@ Resources:
         Comment: nothing
     Metadata:
       aws:cdk:path: dev-3Tier-CDN/OAI
+  distributionLoggingBucket10C2968D:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    Metadata:
+      aws:cdk:path: dev-3Tier-CDN/distribution/LoggingBucket/Resource
   distributionCFDistribution99A57736:
     Type: AWS::CloudFront::Distribution
     Properties:
@@ -195,7 +202,13 @@ Resources:
         DefaultRootObject: index.html
         Enabled: true
         HttpVersion: http2
-        IPV6Enabled: true
+        IPV6Enabled: false
+        Logging:
+          Bucket:
+            Fn::GetAtt:
+              - distributionLoggingBucket10C2968D
+              - DomainName
+          IncludeCookies: false
         Origins:
           - DomainName:
               Fn::GetAtt:
@@ -219,7 +232,7 @@ Resources:
             DomainName:
               Fn::ImportValue: dev-3Tier-DNSName
             Id: origin2
-        PriceClass: PriceClass_100
+        PriceClass: PriceClass_All
         ViewerCertificate:
           CloudFrontDefaultCertificate: true
     Metadata:
@@ -227,7 +240,7 @@ Resources:
   CDKMetadata:
     Type: AWS::CDK::Metadata
     Properties:
-      Modules: aws-cdk=0.21.0,@aws-cdk/assets=0.21.0,@aws-cdk/aws-autoscaling=0.21.0,@aws-cdk/aws-autoscaling-common=0.21.0,@aws-cdk/aws-cloudformation=0.21.0,@aws-cdk/aws-cloudfront=0.21.0,@aws-cdk/aws-cloudwatch=0.21.0,@aws-cdk/aws-codedeploy-api=0.21.0,@aws-cdk/aws-codepipeline-api=0.21.0,@aws-cdk/aws-ec2=0.21.0,@aws-cdk/aws-elasticloadbalancingv2=0.21.0,@aws-cdk/aws-events=0.21.0,@aws-cdk/aws-iam=0.21.0,@aws-cdk/aws-kms=0.21.0,@aws-cdk/aws-lambda=0.21.0,@aws-cdk/aws-s3=0.21.0,@aws-cdk/aws-s3-deployment=0.21.0,@aws-cdk/aws-s3-notifications=0.21.0,@aws-cdk/aws-sqs=0.21.0,@aws-cdk/cdk=0.21.0,@aws-cdk/cx-api=0.21.0,jsii-runtime=node.js/v10.14.1
+      Modules: aws-cdk=0.22.0,@aws-cdk/assets=0.22.0,@aws-cdk/aws-autoscaling=0.22.0,@aws-cdk/aws-autoscaling-common=0.22.0,@aws-cdk/aws-cloudformation=0.22.0,@aws-cdk/aws-cloudfront=0.22.0,@aws-cdk/aws-cloudwatch=0.22.0,@aws-cdk/aws-codedeploy-api=0.22.0,@aws-cdk/aws-codepipeline-api=0.22.0,@aws-cdk/aws-ec2=0.22.0,@aws-cdk/aws-elasticloadbalancingv2=0.22.0,@aws-cdk/aws-events=0.22.0,@aws-cdk/aws-iam=0.22.0,@aws-cdk/aws-kms=0.22.0,@aws-cdk/aws-lambda=0.22.0,@aws-cdk/aws-s3=0.22.0,@aws-cdk/aws-s3-deployment=0.22.0,@aws-cdk/aws-s3-notifications=0.22.0,@aws-cdk/aws-sqs=0.22.0,@aws-cdk/cdk=0.22.0,@aws-cdk/cx-api=0.22.0,jsii-runtime=node.js/v10.14.1
 Parameters:
   BucketDeploymentAssetS3Bucket5FB20E3B:
     Type: String
