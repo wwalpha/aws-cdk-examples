@@ -8,11 +8,13 @@ export default (parent: Construct) => {
     bucketName: getBucketName('distribution'),
     publicReadAccess: false,
     versioned: false,
+    // removalPolicy: RemovalPolicy.Destroy,
   });
 
   new BucketDeployment(parent, 'BucketDeployment', {
     source: Source.asset('./static'),
     destinationBucket: s3,
+    retainOnDelete: false,
   });
 
   return s3;

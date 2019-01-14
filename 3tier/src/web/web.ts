@@ -1,19 +1,17 @@
-import { Stack, App, Output } from '@aws-cdk/cdk';
-import { TcpPort, AnyIPv4, SubnetType, VpcNetwork } from '@aws-cdk/aws-ec2';
+import { Stack, App, Output, StackProps } from '@aws-cdk/cdk';
+import { TcpPort, AnyIPv4, SubnetType } from '@aws-cdk/aws-ec2';
 import { getResourceName } from '@const';
-import { WebProps, WebStackProps } from '.';
+import { WebProps, VpcNetwork } from '.';
 import { createSecurityGroup, creatAutoScalingWithELB } from '@utils';
 
 export default class WebStack extends Stack {
 
   public readonly outputs: WebProps;
 
-  constructor(parent?: App, name?: string, props?: WebStackProps) {
+  constructor(parent?: App, name?: string, props?: StackProps) {
     super(parent, name, props);
-    if (!props) return;
 
-    // VPC
-    const vpc = VpcNetwork.import(this, 'vpc', props.vpc);
+    const vpc = VpcNetwork(this);
     // セキュリティグループ作成
     // internet load blancer
     const elbSg = createSecurityGroup(this, vpc, getResourceName('internet-sg'));
@@ -44,6 +42,7 @@ export default class WebStack extends Stack {
         export: getResourceName('DNSName'),
         value: alb.dnsName,
       }).makeImportValue(),
+      vpc: vpc.export(),
       webSg: webSg.export(),
     };
   }

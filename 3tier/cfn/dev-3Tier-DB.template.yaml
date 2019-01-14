@@ -13,7 +13,7 @@ Resources:
         - Key: Name
           Value: dev-3Tier-db
       VpcId:
-        Fn::ImportValue: dev-3Tier-Root:VPCVpcId2F75874A
+        Fn::ImportValue: dev-3Tier-Web:VPCVpcId2F75874A
     Metadata:
       aws:cdk:path: dev-3Tier-DB/dev-3Tier-db/Resource
   dev3Tierdbfromdev3TierDBappSgF396B4085432B7E6F427:
@@ -31,7 +31,33 @@ Resources:
       ToPort: 5432
     Metadata:
       aws:cdk:path: dev-3Tier-DB/dev-3Tier-db/from dev3TierDBappSgF396B408:5432
+  cfnDBSg:
+    Type: AWS::RDS::DBSecurityGroup
+    Properties:
+      DBSecurityGroupIngress:
+        - EC2SecurityGroupId:
+            Fn::GetAtt:
+              - dev3TierdbB46B52AD
+              - GroupId
+      GroupDescription: db security group
+    Metadata:
+      aws:cdk:path: dev-3Tier-DB/cfnDBSg
+  rds:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceClass: db.t2.micro
+      AllocatedStorage: "5"
+      AllowMajorVersionUpgrade: false
+      AutoMinorVersionUpgrade: false
+      DBName: dev-3Tier-test
+      DBSecurityGroups:
+        - Ref: cfnDBSg
+      Engine: PostgreSQL
+      MasterUsername: wwalpha
+      MasterUserPassword: session10
+    Metadata:
+      aws:cdk:path: dev-3Tier-DB/rds
   CDKMetadata:
     Type: AWS::CDK::Metadata
     Properties:
-      Modules: aws-cdk=0.22.0,@aws-cdk/assets=0.22.0,@aws-cdk/aws-autoscaling=0.22.0,@aws-cdk/aws-autoscaling-common=0.22.0,@aws-cdk/aws-cloudformation=0.22.0,@aws-cdk/aws-cloudfront=0.22.0,@aws-cdk/aws-cloudwatch=0.22.0,@aws-cdk/aws-codedeploy-api=0.22.0,@aws-cdk/aws-codepipeline-api=0.22.0,@aws-cdk/aws-ec2=0.22.0,@aws-cdk/aws-elasticloadbalancingv2=0.22.0,@aws-cdk/aws-events=0.22.0,@aws-cdk/aws-iam=0.22.0,@aws-cdk/aws-kms=0.22.0,@aws-cdk/aws-lambda=0.22.0,@aws-cdk/aws-s3=0.22.0,@aws-cdk/aws-s3-deployment=0.22.0,@aws-cdk/aws-s3-notifications=0.22.0,@aws-cdk/aws-sqs=0.22.0,@aws-cdk/cdk=0.22.0,@aws-cdk/cx-api=0.22.0,jsii-runtime=node.js/v10.14.1
+      Modules: aws-cdk=0.22.0,@aws-cdk/assets=0.22.0,@aws-cdk/aws-autoscaling=0.22.0,@aws-cdk/aws-autoscaling-common=0.22.0,@aws-cdk/aws-cloudformation=0.22.0,@aws-cdk/aws-cloudfront=0.22.0,@aws-cdk/aws-cloudwatch=0.22.0,@aws-cdk/aws-codedeploy-api=0.22.0,@aws-cdk/aws-codepipeline-api=0.22.0,@aws-cdk/aws-ec2=0.22.0,@aws-cdk/aws-elasticloadbalancingv2=0.22.0,@aws-cdk/aws-events=0.22.0,@aws-cdk/aws-iam=0.22.0,@aws-cdk/aws-kms=0.22.0,@aws-cdk/aws-lambda=0.22.0,@aws-cdk/aws-rds=0.22.0,@aws-cdk/aws-s3=0.22.0,@aws-cdk/aws-s3-deployment=0.22.0,@aws-cdk/aws-s3-notifications=0.22.0,@aws-cdk/aws-sqs=0.22.0,@aws-cdk/cdk=0.22.0,@aws-cdk/cx-api=0.22.0,jsii-runtime=node.js/v10.14.1
