@@ -1,0 +1,445 @@
+Resources:
+  webSgfromdev3TierAutoScalingdev3Tierinternetsg38E4F49880F4C0A573:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      IpProtocol: tcp
+      Description: from dev3TierAutoScalingdev3Tierinternetsg38E4F498:80
+      FromPort: 80
+      GroupId:
+        Fn::ImportValue: dev-3Tier-Network:dev3TierwebSgSecurityGroupId642CAC49
+      SourceSecurityGroupId:
+        Fn::GetAtt:
+          - dev3Tierinternetsg9F274F92
+          - GroupId
+      ToPort: 80
+    Metadata:
+      aws:cdk:path: dev-3Tier-AutoScaling/webSg/from
+        dev3TierAutoScalingdev3Tierinternetsg38E4F498:80
+  appSgfromdev3TierAutoScalingdev3TierinternalsgA71D566B80802FB7AB7B:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      IpProtocol: tcp
+      Description: from dev3TierAutoScalingdev3TierinternalsgA71D566B:8080
+      FromPort: 8080
+      GroupId:
+        Fn::ImportValue: dev-3Tier-Network:dev3TierappSgSecurityGroupId5821772A
+      SourceSecurityGroupId:
+        Fn::GetAtt:
+          - dev3Tierinternalsg54F660BD
+          - GroupId
+      ToPort: 8080
+    Metadata:
+      aws:cdk:path: dev-3Tier-AutoScaling/appSg/from
+        dev3TierAutoScalingdev3TierinternalsgA71D566B:8080
+  dev3Tierinternetsg9F274F92:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: dev-3Tier-AutoScaling/dev-3Tier-internet-sg
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow all outbound traffic by default
+          IpProtocol: "-1"
+      SecurityGroupIngress:
+        - CidrIp: 0.0.0.0/0
+          Description: from 0.0.0.0/0:80
+          FromPort: 80
+          IpProtocol: tcp
+          ToPort: 80
+      Tags:
+        - Key: Name
+          Value: dev-3Tier-internet-sg
+      VpcId:
+        Fn::ImportValue: dev-3Tier-Network:VPCVpcId2F75874A
+    Metadata:
+      aws:cdk:path: dev-3Tier-AutoScaling/dev-3Tier-internet-sg/Resource
+  dev3TierinternetC5AC4D78:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      LoadBalancerAttributes:
+        []
+      Name: dev-3Tier-internet
+      Scheme: internet-facing
+      SecurityGroups:
+        - Fn::GetAtt:
+            - dev3Tierinternetsg9F274F92
+            - GroupId
+      Subnets:
+        - Fn::Select:
+            - 0
+            - Fn::Split:
+                - ","
+                - Fn::ImportValue: dev-3Tier-Network:VPCPublicSubnetIDs428979F9
+        - Fn::Select:
+            - 1
+            - Fn::Split:
+                - ","
+                - Fn::ImportValue: dev-3Tier-Network:VPCPublicSubnetIDs428979F9
+      Type: application
+    Metadata:
+      aws:cdk:path: dev-3Tier-AutoScaling/dev-3Tier-internet/Resource
+  dev3Tierinternetlistener34129503:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - TargetGroupArn:
+            Ref: webasgatgDEB742C5
+          Type: forward
+        - TargetGroupArn:
+            Ref: dev3TierinternetlistenerfleetGroup5FAE2361
+          Type: forward
+      LoadBalancerArn:
+        Ref: dev3TierinternetC5AC4D78
+      Port: 80
+      Protocol: HTTP
+      Certificates:
+        []
+    Metadata:
+      aws:cdk:path: dev-3Tier-AutoScaling/dev-3Tier-internet/listener/Resource
+  dev3TierinternetlistenerfleetGroup5FAE2361:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Port: 80
+      Protocol: HTTP
+      VpcId:
+        Fn::ImportValue: dev-3Tier-Network:VPCVpcId2F75874A
+      TargetGroupAttributes:
+        []
+      Targets:
+        []
+      TargetType: instance
+    Metadata:
+      aws:cdk:path: dev-3Tier-AutoScaling/dev-3Tier-internet/listener/fleetGroup/Resource
+  webasgatgDEB742C5:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Port: 80
+      Protocol: HTTP
+      VpcId:
+        Fn::ImportValue: dev-3Tier-Network:VPCVpcId2F75874A
+      TargetGroupAttributes:
+        []
+      Targets:
+        []
+      TargetType: instance
+    Metadata:
+      aws:cdk:path: dev-3Tier-AutoScaling/web-asg-atg/Resource
+  webasgInstanceSecurityGroup8115E354:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: dev-3Tier-AutoScaling/web-asg/InstanceSecurityGroup
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow all outbound traffic by default
+          IpProtocol: "-1"
+      SecurityGroupIngress:
+        []
+      Tags:
+        - Key: Name
+          Value: dev-3Tier-AutoScaling/web-asg
+      VpcId:
+        Fn::ImportValue: dev-3Tier-Network:VPCVpcId2F75874A
+    Metadata:
+      aws:cdk:path: dev-3Tier-AutoScaling/web-asg/InstanceSecurityGroup/Resource
+  webasgInstanceSecurityGroupfromdev3TierAutoScalingdev3Tierinternetsg38E4F4988029F7C0F4:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      IpProtocol: tcp
+      Description: Load balancer to target
+      FromPort: 80
+      GroupId:
+        Fn::GetAtt:
+          - webasgInstanceSecurityGroup8115E354
+          - GroupId
+      SourceSecurityGroupId:
+        Fn::GetAtt:
+          - dev3Tierinternetsg9F274F92
+          - GroupId
+      ToPort: 80
+    Metadata:
+      aws:cdk:path: dev-3Tier-AutoScaling/web-asg/InstanceSecurityGroup/from
+        dev3TierAutoScalingdev3Tierinternetsg38E4F498:80
+  webasgInstanceRoleB5F74920:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+        Version: "2012-10-17"
+    Metadata:
+      aws:cdk:path: dev-3Tier-AutoScaling/web-asg/InstanceRole/Resource
+  webasgInstanceProfile256DCBE1:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - Ref: webasgInstanceRoleB5F74920
+    Metadata:
+      aws:cdk:path: dev-3Tier-AutoScaling/web-asg/InstanceProfile
+  webasgLaunchConfig3B9F5327:
+    Type: AWS::AutoScaling::LaunchConfiguration
+    Properties:
+      ImageId: ami-0213c957664c78fac
+      InstanceType: t2.micro
+      IamInstanceProfile:
+        Ref: webasgInstanceProfile256DCBE1
+      SecurityGroups:
+        - Fn::GetAtt:
+            - webasgInstanceSecurityGroup8115E354
+            - GroupId
+        - Fn::ImportValue: dev-3Tier-Network:dev3TierwebSgSecurityGroupId642CAC49
+      UserData:
+        Fn::Base64: |
+          #!/bin/bash
+      LaunchConfigurationName: dev-3Tier-web-asg-config
+    DependsOn:
+      - webasgInstanceRoleB5F74920
+    Metadata:
+      aws:cdk:path: dev-3Tier-AutoScaling/web-asg/LaunchConfig
+  webasgASGA84A271C:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      MaxSize: "4"
+      MinSize: "0"
+      DesiredCapacity: "2"
+      LaunchConfigurationName:
+        Ref: webasgLaunchConfig3B9F5327
+      Tags:
+        - Key: Name
+          PropagateAtLaunch: true
+          Value: dev-3Tier-AutoScaling/web-asg
+      TargetGroupARNs:
+        - Ref: dev3TierinternetlistenerfleetGroup5FAE2361
+      VPCZoneIdentifier:
+        - Fn::Select:
+            - 0
+            - Fn::Split:
+                - ","
+                - Fn::ImportValue: dev-3Tier-Network:VPCPublicSubnetIDs428979F9
+        - Fn::Select:
+            - 1
+            - Fn::Split:
+                - ","
+                - Fn::ImportValue: dev-3Tier-Network:VPCPublicSubnetIDs428979F9
+    UpdatePolicy:
+      AutoScalingScheduledAction:
+        IgnoreUnmodifiedGroupSizeProperties: true
+    Metadata:
+      aws:cdk:path: dev-3Tier-AutoScaling/web-asg/ASG
+  dev3Tierinternalsg54F660BD:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: dev-3Tier-AutoScaling/dev-3Tier-internal-sg
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow all outbound traffic by default
+          IpProtocol: "-1"
+      SecurityGroupIngress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow from anyone on port 8080
+          FromPort: 8080
+          IpProtocol: tcp
+          ToPort: 8080
+      Tags:
+        - Key: Name
+          Value: dev-3Tier-internal-sg
+      VpcId:
+        Fn::ImportValue: dev-3Tier-Network:VPCVpcId2F75874A
+    Metadata:
+      aws:cdk:path: dev-3Tier-AutoScaling/dev-3Tier-internal-sg/Resource
+  dev3Tierinternalsgfromdev3TierAutoScalingwebSg6C4DA09E808026AE79D3:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      IpProtocol: tcp
+      Description: from dev3TierAutoScalingwebSg6C4DA09E:8080
+      FromPort: 8080
+      GroupId:
+        Fn::GetAtt:
+          - dev3Tierinternalsg54F660BD
+          - GroupId
+      SourceSecurityGroupId:
+        Fn::ImportValue: dev-3Tier-Network:dev3TierwebSgSecurityGroupId642CAC49
+      ToPort: 8080
+    Metadata:
+      aws:cdk:path: dev-3Tier-AutoScaling/dev-3Tier-internal-sg/from
+        dev3TierAutoScalingwebSg6C4DA09E:8080
+  dev3TierinternalF413AEF5:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      LoadBalancerAttributes:
+        []
+      Name: dev-3Tier-internal
+      Scheme: internal
+      SecurityGroups:
+        - Fn::GetAtt:
+            - dev3Tierinternalsg54F660BD
+            - GroupId
+      Subnets:
+        - Fn::Select:
+            - 0
+            - Fn::Split:
+                - ","
+                - Fn::ImportValue: dev-3Tier-Network:VPCIsolatedSubnetIDs0BAB2DBD
+        - Fn::Select:
+            - 1
+            - Fn::Split:
+                - ","
+                - Fn::ImportValue: dev-3Tier-Network:VPCIsolatedSubnetIDs0BAB2DBD
+      Type: application
+    Metadata:
+      aws:cdk:path: dev-3Tier-AutoScaling/dev-3Tier-internal/Resource
+  dev3Tierinternallistener07E2D1FD:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - TargetGroupArn:
+            Ref: appasgatg769C1128
+          Type: forward
+        - TargetGroupArn:
+            Ref: dev3TierinternallistenerfleetGroup7C212424
+          Type: forward
+      LoadBalancerArn:
+        Ref: dev3TierinternalF413AEF5
+      Port: 8080
+      Protocol: HTTP
+      Certificates:
+        []
+    Metadata:
+      aws:cdk:path: dev-3Tier-AutoScaling/dev-3Tier-internal/listener/Resource
+  dev3TierinternallistenerfleetGroup7C212424:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Port: 8080
+      Protocol: HTTP
+      VpcId:
+        Fn::ImportValue: dev-3Tier-Network:VPCVpcId2F75874A
+      TargetGroupAttributes:
+        []
+      Targets:
+        []
+      TargetType: instance
+    Metadata:
+      aws:cdk:path: dev-3Tier-AutoScaling/dev-3Tier-internal/listener/fleetGroup/Resource
+  appasgatg769C1128:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Port: 8080
+      Protocol: HTTP
+      VpcId:
+        Fn::ImportValue: dev-3Tier-Network:VPCVpcId2F75874A
+      TargetGroupAttributes:
+        []
+      Targets:
+        []
+      TargetType: instance
+    Metadata:
+      aws:cdk:path: dev-3Tier-AutoScaling/app-asg-atg/Resource
+  appasgInstanceSecurityGroup8B8185FA:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: dev-3Tier-AutoScaling/app-asg/InstanceSecurityGroup
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow all outbound traffic by default
+          IpProtocol: "-1"
+      SecurityGroupIngress:
+        []
+      Tags:
+        - Key: Name
+          Value: dev-3Tier-AutoScaling/app-asg
+      VpcId:
+        Fn::ImportValue: dev-3Tier-Network:VPCVpcId2F75874A
+    Metadata:
+      aws:cdk:path: dev-3Tier-AutoScaling/app-asg/InstanceSecurityGroup/Resource
+  appasgInstanceSecurityGroupfromdev3TierAutoScalingdev3TierinternalsgA71D566B8080FC29D389:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      IpProtocol: tcp
+      Description: Load balancer to target
+      FromPort: 8080
+      GroupId:
+        Fn::GetAtt:
+          - appasgInstanceSecurityGroup8B8185FA
+          - GroupId
+      SourceSecurityGroupId:
+        Fn::GetAtt:
+          - dev3Tierinternalsg54F660BD
+          - GroupId
+      ToPort: 8080
+    Metadata:
+      aws:cdk:path: dev-3Tier-AutoScaling/app-asg/InstanceSecurityGroup/from
+        dev3TierAutoScalingdev3TierinternalsgA71D566B:8080
+  appasgInstanceRole38B934E7:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+        Version: "2012-10-17"
+    Metadata:
+      aws:cdk:path: dev-3Tier-AutoScaling/app-asg/InstanceRole/Resource
+  appasgInstanceProfile55323240:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - Ref: appasgInstanceRole38B934E7
+    Metadata:
+      aws:cdk:path: dev-3Tier-AutoScaling/app-asg/InstanceProfile
+  appasgLaunchConfig9EFFB3A3:
+    Type: AWS::AutoScaling::LaunchConfiguration
+    Properties:
+      ImageId: ami-00a5245b4816c38e6
+      InstanceType: t2.micro
+      IamInstanceProfile:
+        Ref: appasgInstanceProfile55323240
+      SecurityGroups:
+        - Fn::GetAtt:
+            - appasgInstanceSecurityGroup8B8185FA
+            - GroupId
+        - Fn::ImportValue: dev-3Tier-Network:dev3TierappSgSecurityGroupId5821772A
+      UserData:
+        Fn::Base64: |
+          #!/bin/bash
+      LaunchConfigurationName: dev-3Tier-app-asg-config
+    DependsOn:
+      - appasgInstanceRole38B934E7
+    Metadata:
+      aws:cdk:path: dev-3Tier-AutoScaling/app-asg/LaunchConfig
+  appasgASGE5B53758:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      MaxSize: "4"
+      MinSize: "0"
+      DesiredCapacity: "2"
+      LaunchConfigurationName:
+        Ref: appasgLaunchConfig9EFFB3A3
+      Tags:
+        - Key: Name
+          PropagateAtLaunch: true
+          Value: dev-3Tier-AutoScaling/app-asg
+      TargetGroupARNs:
+        - Ref: dev3TierinternallistenerfleetGroup7C212424
+      VPCZoneIdentifier:
+        - Fn::Select:
+            - 0
+            - Fn::Split:
+                - ","
+                - Fn::ImportValue: dev-3Tier-Network:VPCIsolatedSubnetIDs0BAB2DBD
+        - Fn::Select:
+            - 1
+            - Fn::Split:
+                - ","
+                - Fn::ImportValue: dev-3Tier-Network:VPCIsolatedSubnetIDs0BAB2DBD
+    UpdatePolicy:
+      AutoScalingScheduledAction:
+        IgnoreUnmodifiedGroupSizeProperties: true
+    Metadata:
+      aws:cdk:path: dev-3Tier-AutoScaling/app-asg/ASG
+  CDKMetadata:
+    Type: AWS::CDK::Metadata
+    Properties:
+      Modules: aws-cdk=0.22.0,@aws-cdk/aws-autoscaling=0.22.0,@aws-cdk/aws-autoscaling-common=0.22.0,@aws-cdk/aws-cloudwatch=0.22.0,@aws-cdk/aws-codedeploy-api=0.22.0,@aws-cdk/aws-ec2=0.22.0,@aws-cdk/aws-elasticloadbalancingv2=0.22.0,@aws-cdk/aws-iam=0.22.0,@aws-cdk/aws-rds=0.22.0,@aws-cdk/cdk=0.22.0,@aws-cdk/cx-api=0.22.0,jsii-runtime=node.js/v10.14.1

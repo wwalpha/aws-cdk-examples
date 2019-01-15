@@ -1,63 +1,69 @@
 Resources:
-  dev3TierdbB46B52AD:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupDescription: dev-3Tier-DB/dev-3Tier-db
-      SecurityGroupEgress:
-        - CidrIp: 0.0.0.0/0
-          Description: Allow all outbound traffic by default
-          IpProtocol: "-1"
-      SecurityGroupIngress:
-        []
-      Tags:
-        - Key: Name
-          Value: dev-3Tier-db
-      VpcId:
-        Fn::ImportValue: dev-3Tier-Web:VPCVpcId2F75874A
-    Metadata:
-      aws:cdk:path: dev-3Tier-DB/dev-3Tier-db/Resource
-  dev3Tierdbfromdev3TierDBappSgF396B4085432B7E6F427:
+  dbSgfromdev3TierDBappSgF396B4085432CE9C8C42:
     Type: AWS::EC2::SecurityGroupIngress
     Properties:
       IpProtocol: tcp
       Description: from dev3TierDBappSgF396B408:5432
       FromPort: 5432
       GroupId:
-        Fn::GetAtt:
-          - dev3TierdbB46B52AD
-          - GroupId
+        Fn::ImportValue: dev-3Tier-Network:dev3TierdbSgSecurityGroupId30BE5021
       SourceSecurityGroupId:
-        Fn::ImportValue: dev-3Tier-App:dev3TierappSecurityGroupId8ADD0104
+        Fn::ImportValue: dev-3Tier-Network:dev3TierappSgSecurityGroupId5821772A
       ToPort: 5432
     Metadata:
-      aws:cdk:path: dev-3Tier-DB/dev-3Tier-db/from dev3TierDBappSgF396B408:5432
+      aws:cdk:path: dev-3Tier-DB/dbSg/from dev3TierDBappSgF396B408:5432
   cfnDBSg:
     Type: AWS::RDS::DBSecurityGroup
     Properties:
       DBSecurityGroupIngress:
         - EC2SecurityGroupId:
-            Fn::GetAtt:
-              - dev3TierdbB46B52AD
-              - GroupId
+            Fn::ImportValue: dev-3Tier-Network:dev3TierdbSgSecurityGroupId30BE5021
       GroupDescription: db security group
+      EC2VpcId:
+        Fn::ImportValue: dev-3Tier-Network:VPCVpcId2F75874A
     Metadata:
       aws:cdk:path: dev-3Tier-DB/cfnDBSg
-  rds:
+  cfnSubnet:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: DB Subnet Group
+      SubnetIds:
+        - Fn::Select:
+            - 2
+            - Fn::Split:
+                - ","
+                - Fn::ImportValue: dev-3Tier-Network:VPCIsolatedSubnetIDs0BAB2DBD
+        - Fn::Select:
+            - 3
+            - Fn::Split:
+                - ","
+                - Fn::ImportValue: dev-3Tier-Network:VPCIsolatedSubnetIDs0BAB2DBD
+      DBSubnetGroupName: dev-3Tier-dbSubnet
+    Metadata:
+      aws:cdk:path: dev-3Tier-DB/cfnSubnet
+  RDS:
     Type: AWS::RDS::DBInstance
     Properties:
       DBInstanceClass: db.t2.micro
-      AllocatedStorage: "5"
+      AllocatedStorage: "20"
       AllowMajorVersionUpgrade: false
       AutoMinorVersionUpgrade: false
-      DBName: dev-3Tier-test
+      BackupRetentionPeriod: "0"
+      DBInstanceIdentifier: dev-3Tier-postgres
+      DBName: postgres
       DBSecurityGroups:
         - Ref: cfnDBSg
-      Engine: PostgreSQL
+      DBSubnetGroupName:
+        Ref: cfnSubnet
+      DeletionProtection: false
+      Engine: postgres
+      EngineVersion: "10.4"
       MasterUsername: wwalpha
       MasterUserPassword: session10
+      MultiAZ: false
     Metadata:
-      aws:cdk:path: dev-3Tier-DB/rds
+      aws:cdk:path: dev-3Tier-DB/RDS
   CDKMetadata:
     Type: AWS::CDK::Metadata
     Properties:
-      Modules: aws-cdk=0.22.0,@aws-cdk/assets=0.22.0,@aws-cdk/aws-autoscaling=0.22.0,@aws-cdk/aws-autoscaling-common=0.22.0,@aws-cdk/aws-cloudformation=0.22.0,@aws-cdk/aws-cloudfront=0.22.0,@aws-cdk/aws-cloudwatch=0.22.0,@aws-cdk/aws-codedeploy-api=0.22.0,@aws-cdk/aws-codepipeline-api=0.22.0,@aws-cdk/aws-ec2=0.22.0,@aws-cdk/aws-elasticloadbalancingv2=0.22.0,@aws-cdk/aws-events=0.22.0,@aws-cdk/aws-iam=0.22.0,@aws-cdk/aws-kms=0.22.0,@aws-cdk/aws-lambda=0.22.0,@aws-cdk/aws-rds=0.22.0,@aws-cdk/aws-s3=0.22.0,@aws-cdk/aws-s3-deployment=0.22.0,@aws-cdk/aws-s3-notifications=0.22.0,@aws-cdk/aws-sqs=0.22.0,@aws-cdk/cdk=0.22.0,@aws-cdk/cx-api=0.22.0,jsii-runtime=node.js/v10.14.1
+      Modules: aws-cdk=0.22.0,@aws-cdk/aws-autoscaling=0.22.0,@aws-cdk/aws-autoscaling-common=0.22.0,@aws-cdk/aws-cloudwatch=0.22.0,@aws-cdk/aws-codedeploy-api=0.22.0,@aws-cdk/aws-ec2=0.22.0,@aws-cdk/aws-elasticloadbalancingv2=0.22.0,@aws-cdk/aws-iam=0.22.0,@aws-cdk/aws-rds=0.22.0,@aws-cdk/cdk=0.22.0,@aws-cdk/cx-api=0.22.0,jsii-runtime=node.js/v10.14.1
