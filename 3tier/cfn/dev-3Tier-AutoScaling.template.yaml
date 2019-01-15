@@ -82,10 +82,7 @@ Resources:
     Properties:
       DefaultActions:
         - TargetGroupArn:
-            Ref: webasgatgDEB742C5
-          Type: forward
-        - TargetGroupArn:
-            Ref: dev3TierinternetlistenerfleetGroup5FAE2361
+            Ref: webatg6CEBF071
           Type: forward
       LoadBalancerArn:
         Ref: dev3TierinternetC5AC4D78
@@ -95,7 +92,7 @@ Resources:
         []
     Metadata:
       aws:cdk:path: dev-3Tier-AutoScaling/dev-3Tier-internet/listener/Resource
-  dev3TierinternetlistenerfleetGroup5FAE2361:
+  webatg6CEBF071:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
       Port: 80
@@ -107,26 +104,13 @@ Resources:
       Targets:
         []
       TargetType: instance
+      Name: dev-3Tier-web-atg
     Metadata:
-      aws:cdk:path: dev-3Tier-AutoScaling/dev-3Tier-internet/listener/fleetGroup/Resource
-  webasgatgDEB742C5:
-    Type: AWS::ElasticLoadBalancingV2::TargetGroup
-    Properties:
-      Port: 80
-      Protocol: HTTP
-      VpcId:
-        Fn::ImportValue: dev-3Tier-Network:VPCVpcId2F75874A
-      TargetGroupAttributes:
-        []
-      Targets:
-        []
-      TargetType: instance
-    Metadata:
-      aws:cdk:path: dev-3Tier-AutoScaling/web-asg-atg/Resource
-  webasgInstanceSecurityGroup8115E354:
+      aws:cdk:path: dev-3Tier-AutoScaling/web-atg/Resource
+  webInstanceSecurityGroupA26AA3C5:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: dev-3Tier-AutoScaling/web-asg/InstanceSecurityGroup
+      GroupDescription: dev-3Tier-AutoScaling/web/InstanceSecurityGroup
       SecurityGroupEgress:
         - CidrIp: 0.0.0.0/0
           Description: Allow all outbound traffic by default
@@ -135,12 +119,12 @@ Resources:
         []
       Tags:
         - Key: Name
-          Value: dev-3Tier-AutoScaling/web-asg
+          Value: dev-3Tier-AutoScaling/web
       VpcId:
         Fn::ImportValue: dev-3Tier-Network:VPCVpcId2F75874A
     Metadata:
-      aws:cdk:path: dev-3Tier-AutoScaling/web-asg/InstanceSecurityGroup/Resource
-  webasgInstanceSecurityGroupfromdev3TierAutoScalingdev3Tierinternetsg38E4F4988029F7C0F4:
+      aws:cdk:path: dev-3Tier-AutoScaling/web/InstanceSecurityGroup/Resource
+  webInstanceSecurityGroupfromdev3TierAutoScalingdev3Tierinternetsg38E4F49880AD8F0629:
     Type: AWS::EC2::SecurityGroupIngress
     Properties:
       IpProtocol: tcp
@@ -148,7 +132,7 @@ Resources:
       FromPort: 80
       GroupId:
         Fn::GetAtt:
-          - webasgInstanceSecurityGroup8115E354
+          - webInstanceSecurityGroupA26AA3C5
           - GroupId
       SourceSecurityGroupId:
         Fn::GetAtt:
@@ -156,9 +140,9 @@ Resources:
           - GroupId
       ToPort: 80
     Metadata:
-      aws:cdk:path: dev-3Tier-AutoScaling/web-asg/InstanceSecurityGroup/from
+      aws:cdk:path: dev-3Tier-AutoScaling/web/InstanceSecurityGroup/from
         dev3TierAutoScalingdev3Tierinternetsg38E4F498:80
-  webasgInstanceRoleB5F74920:
+  webInstanceRole18A3CFAB:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
@@ -169,48 +153,48 @@ Resources:
               Service: ec2.amazonaws.com
         Version: "2012-10-17"
     Metadata:
-      aws:cdk:path: dev-3Tier-AutoScaling/web-asg/InstanceRole/Resource
-  webasgInstanceProfile256DCBE1:
+      aws:cdk:path: dev-3Tier-AutoScaling/web/InstanceRole/Resource
+  webInstanceProfile7CBE575C:
     Type: AWS::IAM::InstanceProfile
     Properties:
       Roles:
-        - Ref: webasgInstanceRoleB5F74920
+        - Ref: webInstanceRole18A3CFAB
     Metadata:
-      aws:cdk:path: dev-3Tier-AutoScaling/web-asg/InstanceProfile
-  webasgLaunchConfig3B9F5327:
+      aws:cdk:path: dev-3Tier-AutoScaling/web/InstanceProfile
+  webLaunchConfig014FA60D:
     Type: AWS::AutoScaling::LaunchConfiguration
     Properties:
       ImageId: ami-0213c957664c78fac
       InstanceType: t2.micro
       IamInstanceProfile:
-        Ref: webasgInstanceProfile256DCBE1
+        Ref: webInstanceProfile7CBE575C
       SecurityGroups:
         - Fn::GetAtt:
-            - webasgInstanceSecurityGroup8115E354
+            - webInstanceSecurityGroupA26AA3C5
             - GroupId
         - Fn::ImportValue: dev-3Tier-Network:dev3TierwebSgSecurityGroupId642CAC49
       UserData:
         Fn::Base64: |
           #!/bin/bash
-      LaunchConfigurationName: dev-3Tier-web-asg-config
+      LaunchConfigurationName: dev-3Tier-web-config
     DependsOn:
-      - webasgInstanceRoleB5F74920
+      - webInstanceRole18A3CFAB
     Metadata:
-      aws:cdk:path: dev-3Tier-AutoScaling/web-asg/LaunchConfig
-  webasgASGA84A271C:
+      aws:cdk:path: dev-3Tier-AutoScaling/web/LaunchConfig
+  webASG4A8B8025:
     Type: AWS::AutoScaling::AutoScalingGroup
     Properties:
       MaxSize: "4"
       MinSize: "0"
       DesiredCapacity: "2"
       LaunchConfigurationName:
-        Ref: webasgLaunchConfig3B9F5327
+        Ref: webLaunchConfig014FA60D
       Tags:
         - Key: Name
           PropagateAtLaunch: true
-          Value: dev-3Tier-AutoScaling/web-asg
+          Value: dev-3Tier-AutoScaling/web
       TargetGroupARNs:
-        - Ref: dev3TierinternetlistenerfleetGroup5FAE2361
+        - Ref: webatg6CEBF071
       VPCZoneIdentifier:
         - Fn::Select:
             - 0
@@ -226,7 +210,7 @@ Resources:
       AutoScalingScheduledAction:
         IgnoreUnmodifiedGroupSizeProperties: true
     Metadata:
-      aws:cdk:path: dev-3Tier-AutoScaling/web-asg/ASG
+      aws:cdk:path: dev-3Tier-AutoScaling/web/ASG
   dev3Tierinternalsg54F660BD:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -294,10 +278,7 @@ Resources:
     Properties:
       DefaultActions:
         - TargetGroupArn:
-            Ref: appasgatg769C1128
-          Type: forward
-        - TargetGroupArn:
-            Ref: dev3TierinternallistenerfleetGroup7C212424
+            Ref: appatgB4F38CAB
           Type: forward
       LoadBalancerArn:
         Ref: dev3TierinternalF413AEF5
@@ -307,7 +288,7 @@ Resources:
         []
     Metadata:
       aws:cdk:path: dev-3Tier-AutoScaling/dev-3Tier-internal/listener/Resource
-  dev3TierinternallistenerfleetGroup7C212424:
+  appatgB4F38CAB:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
       Port: 8080
@@ -319,26 +300,13 @@ Resources:
       Targets:
         []
       TargetType: instance
+      Name: dev-3Tier-app-atg
     Metadata:
-      aws:cdk:path: dev-3Tier-AutoScaling/dev-3Tier-internal/listener/fleetGroup/Resource
-  appasgatg769C1128:
-    Type: AWS::ElasticLoadBalancingV2::TargetGroup
-    Properties:
-      Port: 8080
-      Protocol: HTTP
-      VpcId:
-        Fn::ImportValue: dev-3Tier-Network:VPCVpcId2F75874A
-      TargetGroupAttributes:
-        []
-      Targets:
-        []
-      TargetType: instance
-    Metadata:
-      aws:cdk:path: dev-3Tier-AutoScaling/app-asg-atg/Resource
-  appasgInstanceSecurityGroup8B8185FA:
+      aws:cdk:path: dev-3Tier-AutoScaling/app-atg/Resource
+  appInstanceSecurityGroup2A99D910:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: dev-3Tier-AutoScaling/app-asg/InstanceSecurityGroup
+      GroupDescription: dev-3Tier-AutoScaling/app/InstanceSecurityGroup
       SecurityGroupEgress:
         - CidrIp: 0.0.0.0/0
           Description: Allow all outbound traffic by default
@@ -347,12 +315,12 @@ Resources:
         []
       Tags:
         - Key: Name
-          Value: dev-3Tier-AutoScaling/app-asg
+          Value: dev-3Tier-AutoScaling/app
       VpcId:
         Fn::ImportValue: dev-3Tier-Network:VPCVpcId2F75874A
     Metadata:
-      aws:cdk:path: dev-3Tier-AutoScaling/app-asg/InstanceSecurityGroup/Resource
-  appasgInstanceSecurityGroupfromdev3TierAutoScalingdev3TierinternalsgA71D566B8080FC29D389:
+      aws:cdk:path: dev-3Tier-AutoScaling/app/InstanceSecurityGroup/Resource
+  appInstanceSecurityGroupfromdev3TierAutoScalingdev3TierinternalsgA71D566B80800E4706C4:
     Type: AWS::EC2::SecurityGroupIngress
     Properties:
       IpProtocol: tcp
@@ -360,7 +328,7 @@ Resources:
       FromPort: 8080
       GroupId:
         Fn::GetAtt:
-          - appasgInstanceSecurityGroup8B8185FA
+          - appInstanceSecurityGroup2A99D910
           - GroupId
       SourceSecurityGroupId:
         Fn::GetAtt:
@@ -368,9 +336,9 @@ Resources:
           - GroupId
       ToPort: 8080
     Metadata:
-      aws:cdk:path: dev-3Tier-AutoScaling/app-asg/InstanceSecurityGroup/from
+      aws:cdk:path: dev-3Tier-AutoScaling/app/InstanceSecurityGroup/from
         dev3TierAutoScalingdev3TierinternalsgA71D566B:8080
-  appasgInstanceRole38B934E7:
+  appInstanceRoleDA866B93:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
@@ -381,48 +349,48 @@ Resources:
               Service: ec2.amazonaws.com
         Version: "2012-10-17"
     Metadata:
-      aws:cdk:path: dev-3Tier-AutoScaling/app-asg/InstanceRole/Resource
-  appasgInstanceProfile55323240:
+      aws:cdk:path: dev-3Tier-AutoScaling/app/InstanceRole/Resource
+  appInstanceProfileF452F4E3:
     Type: AWS::IAM::InstanceProfile
     Properties:
       Roles:
-        - Ref: appasgInstanceRole38B934E7
+        - Ref: appInstanceRoleDA866B93
     Metadata:
-      aws:cdk:path: dev-3Tier-AutoScaling/app-asg/InstanceProfile
-  appasgLaunchConfig9EFFB3A3:
+      aws:cdk:path: dev-3Tier-AutoScaling/app/InstanceProfile
+  appLaunchConfigA16ECF23:
     Type: AWS::AutoScaling::LaunchConfiguration
     Properties:
       ImageId: ami-00a5245b4816c38e6
       InstanceType: t2.micro
       IamInstanceProfile:
-        Ref: appasgInstanceProfile55323240
+        Ref: appInstanceProfileF452F4E3
       SecurityGroups:
         - Fn::GetAtt:
-            - appasgInstanceSecurityGroup8B8185FA
+            - appInstanceSecurityGroup2A99D910
             - GroupId
         - Fn::ImportValue: dev-3Tier-Network:dev3TierappSgSecurityGroupId5821772A
       UserData:
         Fn::Base64: |
           #!/bin/bash
-      LaunchConfigurationName: dev-3Tier-app-asg-config
+      LaunchConfigurationName: dev-3Tier-app-config
     DependsOn:
-      - appasgInstanceRole38B934E7
+      - appInstanceRoleDA866B93
     Metadata:
-      aws:cdk:path: dev-3Tier-AutoScaling/app-asg/LaunchConfig
-  appasgASGE5B53758:
+      aws:cdk:path: dev-3Tier-AutoScaling/app/LaunchConfig
+  appASG5BBEB5D4:
     Type: AWS::AutoScaling::AutoScalingGroup
     Properties:
       MaxSize: "4"
       MinSize: "0"
       DesiredCapacity: "2"
       LaunchConfigurationName:
-        Ref: appasgLaunchConfig9EFFB3A3
+        Ref: appLaunchConfigA16ECF23
       Tags:
         - Key: Name
           PropagateAtLaunch: true
-          Value: dev-3Tier-AutoScaling/app-asg
+          Value: dev-3Tier-AutoScaling/app
       TargetGroupARNs:
-        - Ref: dev3TierinternallistenerfleetGroup7C212424
+        - Ref: appatgB4F38CAB
       VPCZoneIdentifier:
         - Fn::Select:
             - 0
@@ -438,7 +406,7 @@ Resources:
       AutoScalingScheduledAction:
         IgnoreUnmodifiedGroupSizeProperties: true
     Metadata:
-      aws:cdk:path: dev-3Tier-AutoScaling/app-asg/ASG
+      aws:cdk:path: dev-3Tier-AutoScaling/app/ASG
   CDKMetadata:
     Type: AWS::CDK::Metadata
     Properties:

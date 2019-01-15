@@ -1,5 +1,5 @@
 import { Stack, App, Construct } from '@aws-cdk/cdk';
-import { TcpPort, VpcNetwork, SecurityGroup, AnyIPv4, SubnetType } from '@aws-cdk/aws-ec2';
+import { TcpPort, VpcNetwork, SecurityGroup, AnyIPv4, SubnetType, GenericLinuxImage, AmazonLinuxImage } from '@aws-cdk/aws-ec2';
 import { getResourceName } from '@const';
 import { createSecurityGroup, creatAutoScalingWithELB } from '@utils';
 import { AutoScalingProps, AutoScalingStackProps, WebScalingProps } from '@asg';
@@ -49,8 +49,10 @@ const webScaling = (parent: Construct, props: WebScalingProps) => {
         subnetsToUse: SubnetType.Public,
       },
       elbName: getResourceName('internet'),
-      asgName: getResourceName('web-asg'),
-      ami: 'ami-0ae06ebad9afaa5af',
+      layerName: 'web',
+      machineImage: new GenericLinuxImage({
+        'ap-northeast-1': 'ami-0213c957664c78fac',
+      }),
       port: 80,
       internetFacing: true,
     });
@@ -77,8 +79,8 @@ const appScaling = (parent: Construct, props: WebScalingProps) => {
         subnetName: 'app',
       },
       elbName: getResourceName('internal'),
-      asgName: getResourceName('app-asg'),
-      ami: 'ami-0392d5a72b96eb147',
+      layerName: 'app',
+      machineImage: new AmazonLinuxImage(),
       port: 8080,
       internetFacing: false,
     });
