@@ -21,7 +21,7 @@ Resources:
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
-          Value: dev-3Tier-Network/VPC/webSubnet1
+          Value: dev-3Tier-web
         - Key: aws-cdk:subnet-name
           Value: web
         - Key: aws-cdk:subnet-type
@@ -35,7 +35,7 @@ Resources:
         Ref: VPCB9E5F0B4
       Tags:
         - Key: Name
-          Value: dev-3Tier-Network/VPC/webSubnet1
+          Value: dev-3Tier-web
     Metadata:
       aws:cdk:path: dev-3Tier-Network/VPC/webSubnet1/RouteTable
   VPCwebSubnet1RouteTableAssociationCFDC03B8:
@@ -69,7 +69,7 @@ Resources:
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
-          Value: dev-3Tier-Network/VPC/webSubnet2
+          Value: dev-3Tier-web
         - Key: aws-cdk:subnet-name
           Value: web
         - Key: aws-cdk:subnet-type
@@ -83,7 +83,7 @@ Resources:
         Ref: VPCB9E5F0B4
       Tags:
         - Key: Name
-          Value: dev-3Tier-Network/VPC/webSubnet2
+          Value: dev-3Tier-web
     Metadata:
       aws:cdk:path: dev-3Tier-Network/VPC/webSubnet2/RouteTable
   VPCwebSubnet2RouteTableAssociation130CDB9B:
@@ -114,14 +114,14 @@ Resources:
       VpcId:
         Ref: VPCB9E5F0B4
       AvailabilityZone: ap-northeast-1a
-      MapPublicIpOnLaunch: false
+      MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
-          Value: dev-3Tier-Network/VPC/appSubnet1
-        - Key: aws-cdk:subnet-type
-          Value: Isolated
+          Value: dev-3Tier-app
         - Key: aws-cdk:subnet-name
           Value: app
+        - Key: aws-cdk:subnet-type
+          Value: Public
     Metadata:
       aws:cdk:path: dev-3Tier-Network/VPC/appSubnet1/Subnet
   VPCappSubnet1RouteTable625B8824:
@@ -131,7 +131,7 @@ Resources:
         Ref: VPCB9E5F0B4
       Tags:
         - Key: Name
-          Value: dev-3Tier-Network/VPC/appSubnet1
+          Value: dev-3Tier-app
     Metadata:
       aws:cdk:path: dev-3Tier-Network/VPC/appSubnet1/RouteTable
   VPCappSubnet1RouteTableAssociation6E59FCF1:
@@ -143,6 +143,18 @@ Resources:
         Ref: VPCappSubnet1SubnetCDCE8516
     Metadata:
       aws:cdk:path: dev-3Tier-Network/VPC/appSubnet1/RouteTableAssociation
+  VPCappSubnet1DefaultRoute54E51750:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId:
+        Ref: VPCappSubnet1RouteTable625B8824
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId:
+        Ref: VPCIGWB7E252D3
+    DependsOn:
+      - VPCVPCGW99B986DC
+    Metadata:
+      aws:cdk:path: dev-3Tier-Network/VPC/appSubnet1/DefaultRoute
   VPCappSubnet2Subnet12EE3759:
     Type: AWS::EC2::Subnet
     Properties:
@@ -150,14 +162,14 @@ Resources:
       VpcId:
         Ref: VPCB9E5F0B4
       AvailabilityZone: ap-northeast-1c
-      MapPublicIpOnLaunch: false
+      MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
-          Value: dev-3Tier-Network/VPC/appSubnet2
-        - Key: aws-cdk:subnet-type
-          Value: Isolated
+          Value: dev-3Tier-app
         - Key: aws-cdk:subnet-name
           Value: app
+        - Key: aws-cdk:subnet-type
+          Value: Public
     Metadata:
       aws:cdk:path: dev-3Tier-Network/VPC/appSubnet2/Subnet
   VPCappSubnet2RouteTable86E30F77:
@@ -167,7 +179,7 @@ Resources:
         Ref: VPCB9E5F0B4
       Tags:
         - Key: Name
-          Value: dev-3Tier-Network/VPC/appSubnet2
+          Value: dev-3Tier-app
     Metadata:
       aws:cdk:path: dev-3Tier-Network/VPC/appSubnet2/RouteTable
   VPCappSubnet2RouteTableAssociationF764FEC2:
@@ -179,6 +191,18 @@ Resources:
         Ref: VPCappSubnet2Subnet12EE3759
     Metadata:
       aws:cdk:path: dev-3Tier-Network/VPC/appSubnet2/RouteTableAssociation
+  VPCappSubnet2DefaultRoute8053AE9F:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId:
+        Ref: VPCappSubnet2RouteTable86E30F77
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId:
+        Ref: VPCIGWB7E252D3
+    DependsOn:
+      - VPCVPCGW99B986DC
+    Metadata:
+      aws:cdk:path: dev-3Tier-Network/VPC/appSubnet2/DefaultRoute
   VPCdbSubnet1SubnetC7C1BE50:
     Type: AWS::EC2::Subnet
     Properties:
@@ -189,7 +213,7 @@ Resources:
       MapPublicIpOnLaunch: false
       Tags:
         - Key: Name
-          Value: dev-3Tier-Network/VPC/dbSubnet1
+          Value: dev-3Tier-db
         - Key: aws-cdk:subnet-type
           Value: Isolated
         - Key: aws-cdk:subnet-name
@@ -203,7 +227,7 @@ Resources:
         Ref: VPCB9E5F0B4
       Tags:
         - Key: Name
-          Value: dev-3Tier-Network/VPC/dbSubnet1
+          Value: dev-3Tier-db
     Metadata:
       aws:cdk:path: dev-3Tier-Network/VPC/dbSubnet1/RouteTable
   VPCdbSubnet1RouteTableAssociation873FD6F3:
@@ -225,7 +249,7 @@ Resources:
       MapPublicIpOnLaunch: false
       Tags:
         - Key: Name
-          Value: dev-3Tier-Network/VPC/dbSubnet2
+          Value: dev-3Tier-db
         - Key: aws-cdk:subnet-type
           Value: Isolated
         - Key: aws-cdk:subnet-name
@@ -239,7 +263,7 @@ Resources:
         Ref: VPCB9E5F0B4
       Tags:
         - Key: Name
-          Value: dev-3Tier-Network/VPC/dbSubnet2
+          Value: dev-3Tier-db
     Metadata:
       aws:cdk:path: dev-3Tier-Network/VPC/dbSubnet2/RouteTable
   VPCdbSubnet2RouteTableAssociation58734109:
@@ -268,57 +292,6 @@ Resources:
         Ref: VPCIGWB7E252D3
     Metadata:
       aws:cdk:path: dev-3Tier-Network/VPC/VPCGW
-  dev3TierwebSg64F9E5B9:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupDescription: dev-3Tier-Network/dev-3Tier-webSg
-      SecurityGroupEgress:
-        - CidrIp: 0.0.0.0/0
-          Description: Allow all outbound traffic by default
-          IpProtocol: "-1"
-      SecurityGroupIngress:
-        []
-      Tags:
-        - Key: Name
-          Value: dev-3Tier-webSg
-      VpcId:
-        Ref: VPCB9E5F0B4
-    Metadata:
-      aws:cdk:path: dev-3Tier-Network/dev-3Tier-webSg/Resource
-  dev3TierappSg799D997B:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupDescription: dev-3Tier-Network/dev-3Tier-appSg
-      SecurityGroupEgress:
-        - CidrIp: 0.0.0.0/0
-          Description: Allow all outbound traffic by default
-          IpProtocol: "-1"
-      SecurityGroupIngress:
-        []
-      Tags:
-        - Key: Name
-          Value: dev-3Tier-appSg
-      VpcId:
-        Ref: VPCB9E5F0B4
-    Metadata:
-      aws:cdk:path: dev-3Tier-Network/dev-3Tier-appSg/Resource
-  dev3TierdbSg9A955127:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupDescription: dev-3Tier-Network/dev-3Tier-dbSg
-      SecurityGroupEgress:
-        - CidrIp: 0.0.0.0/0
-          Description: Allow all outbound traffic by default
-          IpProtocol: "-1"
-      SecurityGroupIngress:
-        []
-      Tags:
-        - Key: Name
-          Value: dev-3Tier-dbSg
-      VpcId:
-        Ref: VPCB9E5F0B4
-    Metadata:
-      aws:cdk:path: dev-3Tier-Network/dev-3Tier-dbSg/Resource
   CDKMetadata:
     Type: AWS::CDK::Metadata
     Properties:
@@ -330,15 +303,15 @@ Outputs:
         - ","
         - - Ref: VPCwebSubnet1Subnet70A8869C
           - Ref: VPCwebSubnet2SubnetA89FD16F
+          - Ref: VPCappSubnet1SubnetCDCE8516
+          - Ref: VPCappSubnet2Subnet12EE3759
     Export:
       Name: dev-3Tier-Network:VPCPublicSubnetIDs428979F9
   VPCIsolatedSubnetIDs0BAB2DBD:
     Value:
       Fn::Join:
         - ","
-        - - Ref: VPCappSubnet1SubnetCDCE8516
-          - Ref: VPCappSubnet2Subnet12EE3759
-          - Ref: VPCdbSubnet1SubnetC7C1BE50
+        - - Ref: VPCdbSubnet1SubnetC7C1BE50
           - Ref: VPCdbSubnet2Subnet4D0CD5E3
     Export:
       Name: dev-3Tier-Network:VPCIsolatedSubnetIDs0BAB2DBD
@@ -347,24 +320,3 @@ Outputs:
       Ref: VPCB9E5F0B4
     Export:
       Name: dev-3Tier-Network:VPCVpcId2F75874A
-  dev3TierwebSgSecurityGroupId642CAC49:
-    Value:
-      Fn::GetAtt:
-        - dev3TierwebSg64F9E5B9
-        - GroupId
-    Export:
-      Name: dev-3Tier-Network:dev3TierwebSgSecurityGroupId642CAC49
-  dev3TierappSgSecurityGroupId5821772A:
-    Value:
-      Fn::GetAtt:
-        - dev3TierappSg799D997B
-        - GroupId
-    Export:
-      Name: dev-3Tier-Network:dev3TierappSgSecurityGroupId5821772A
-  dev3TierdbSgSecurityGroupId30BE5021:
-    Value:
-      Fn::GetAtt:
-        - dev3TierdbSg9A955127
-        - GroupId
-    Export:
-      Name: dev-3Tier-Network:dev3TierdbSgSecurityGroupId30BE5021

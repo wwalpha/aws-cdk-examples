@@ -1,44 +1,61 @@
 import { Construct, Tags } from '@aws-cdk/cdk';
 import { ApplicationLoadBalancer, ApplicationTargetGroup, TargetType, ApplicationProtocol, CfnTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { AutoScalingGroup, CfnLaunchConfiguration } from '@aws-cdk/aws-autoscaling';
-import { IVpcNetwork, ISecurityGroup, VpcPlacementStrategy, InstanceTypePair, InstanceClass, InstanceSize, IMachineImageSource } from '@aws-cdk/aws-ec2';
+import { IVpcNetwork, VpcPlacementStrategy, InstanceTypePair, InstanceClass, InstanceSize, IMachineImageSource, CfnSecurityGroup } from '@aws-cdk/aws-ec2';
 import { getResourceName } from '@const';
+import { createSecurityGroup } from '@utils';
 
 export interface ELBProps {
   vpc: IVpcNetwork;
-  elbSg: ISecurityGroup;
-  asgSg?: ISecurityGroup;
   vpcPlacement: VpcPlacementStrategy;
   internetFacing?: boolean;
   deletionProtection?: boolean;
   port: number;
-  elbName: string;
+  name: string;
+  layerName: string;
+}
+
+export interface ELBRetProps {
+  loadBalancer: ApplicationLoadBalancer;
+  targetGroup: ApplicationTargetGroup;
+}
+
+export interface ASGProps {
+  vpc: IVpcNetwork;
+  vpcPlacement: VpcPlacementStrategy;
   layerName: string;
   machineImage: IMachineImageSource;
   tags?: Tags;
 }
 
-export const creatAutoScalingWithELB = (scope: Construct, props: ELBProps) => {
-  // internet load blancer
-  const appLB = new ApplicationLoadBalancer(scope, props.elbName, {
+/**
+ * Application Load Blancer作成
+ *
+ * @param scope
+ * @param props
+ */
+export const createELB = (scope: Construct, props: ELBProps): ELBRetProps => {
+  // application load blancer
+  const appLB = new ApplicationLoadBalancer(scope, props.name, {
     vpc: props.vpc,
     vpcPlacement: props.vpcPlacement,
     internetFacing: props.internetFacing,
     deletionProtection: props.deletionProtection,
-    securityGroup: props.elbSg,
-    loadBalancerName: props.elbName,
+    loadBalancerName: props.name,
+    securityGroup: createSecurityGroup(scope, props.vpc, `${props.layerName}-sg`),
   });
 
-  const atg = new ApplicationTargetGroup(scope, `${props.layerName}-tg`, {
+  const atgName = `${props.layerName}-tg`;
+  const atg = new ApplicationTargetGroup(scope, atgName, {
     vpc: props.vpc,
-    targetGroupName: `${props.layerName}-tg`,
+    targetGroupName: atgName,
     targetType: TargetType.Instance,
     protocol: ApplicationProtocol.Http,
     port: props.port,
   });
 
   const cfnTg = atg.node.findChild('Resource') as CfnTargetGroup;
-  cfnTg.addPropertyOverride('Name', getResourceName(`${props.layerName}-tg`));
+  cfnTg.addPropertyOverride('Name', getResourceName(atgName));
 
   // listener:80
   appLB.addListener('listener', {
@@ -47,6 +64,18 @@ export const creatAutoScalingWithELB = (scope: Construct, props: ELBProps) => {
     defaultTargetGroups: [atg],
   });
 
+  return {
+    loadBalancer: appLB,
+    targetGroup: atg,
+  };
+};
+
+/**
+ * Auto Scaling Groupを作成
+ * @param scope
+ * @param props
+ */
+export const creatAutoScaling = (scope: Construct, props: ASGProps) => {
   const asg = new AutoScalingGroup(scope, props.layerName, {
     vpc: props.vpc,
     vpcPlacement: props.vpcPlacement,
@@ -62,12 +91,8 @@ export const creatAutoScalingWithELB = (scope: Construct, props: ELBProps) => {
 
   // Launch Config Name
   const config = asg.node.findChild('LaunchConfig') as CfnLaunchConfiguration;
-  config.addPropertyOverride('LaunchConfigurationName', `${getResourceName(props.layerName)}-config`);
+  config.propertyOverrides.securityGroups = [createSecurityGroup(scope, props.vpc, 'app-asg-sg').securityGroupId];
+  config.propertyOverrides.launchConfigurationName = `${getResourceName(props.layerName)}-config`;
 
-  // auto scaling security group
-  props.asgSg && asg.addSecurityGroup(props.asgSg);
-
-  asg.attachToApplicationTargetGroup(atg);
-
-  return appLB;
+  return asg;
 };

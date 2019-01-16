@@ -1,8 +1,9 @@
 import { Stack, App } from '@aws-cdk/cdk';
-import { TcpPort, VpcNetwork, SecurityGroup } from '@aws-cdk/aws-ec2';
-import { CfnDBInstance, CfnDBSecurityGroup, CfnDBSubnetGroup } from '@aws-cdk/aws-rds';
-import { getResourceName } from '@const';
 import { DBStackProps, DBProps } from '@db';
+import { VpcNetwork } from '@aws-cdk/aws-ec2';
+import { CfnDBSubnetGroup, CfnDBInstance } from '@aws-cdk/aws-rds';
+import { getResourceName } from '@const';
+import { createSecurityGroup } from '@utils';
 
 export default class DBStack extends Stack {
 
@@ -15,19 +16,6 @@ export default class DBStack extends Stack {
 
     // Cross Stack Import
     const vpc = VpcNetwork.import(this, 'vpc', props.vpc);
-    const appSg = SecurityGroup.import(this, 'appSg', props.appSg);
-    const dbSg = SecurityGroup.import(this, 'dbSg', props.dbSg);
-
-    // DB Security Group
-    dbSg.addIngressRule(appSg, new TcpPort(5432));
-
-    const cfnSg = new CfnDBSecurityGroup(this, 'cfnDBSg', {
-      ec2VpcId: vpc.vpcId,
-      dbSecurityGroupIngress: [{
-        ec2SecurityGroupId: dbSg.securityGroupId,
-      }],
-      groupDescription: 'db security group',
-    });
 
     const subnetIds = vpc.isolatedSubnets
       .filter(item => item.node.id.startsWith('db'))
@@ -39,6 +27,7 @@ export default class DBStack extends Stack {
       dbSubnetGroupDescription: 'DB Subnet Group',
     });
 
+    const sg = createSecurityGroup(this, vpc, 'db-sg');
     // DatabaseCluster
     const db = new CfnDBInstance(this, 'RDS', {
       allowMajorVersionUpgrade: false,
@@ -51,8 +40,8 @@ export default class DBStack extends Stack {
       masterUsername: 'wwalpha',
       masterUserPassword: 'session10',
       allocatedStorage: '20',
-      dbSecurityGroups: [cfnSg.ref],
       dbSubnetGroupName: cfnSubnet.dbSubnetGroupName,
+      vpcSecurityGroups: [sg.securityGroupId],
       deletionProtection: false,
       multiAz: false,
       backupRetentionPeriod: '0',
@@ -60,6 +49,7 @@ export default class DBStack extends Stack {
 
     this.outputs = {
       endpoint: db.dbInstanceEndpointAddress,
+      dbSecurityGroup: sg,
     };
   }
 }

@@ -1,8 +1,8 @@
 import { Stack, App, Construct } from '@aws-cdk/cdk';
-import { TcpPort, VpcNetwork, SecurityGroup, AnyIPv4, SubnetType, GenericLinuxImage, AmazonLinuxImage } from '@aws-cdk/aws-ec2';
+import { AutoScalingProps, AutoScalingStackProps, ScalingGroupProps } from '@asg';
+import { VpcNetwork, AmazonLinuxImage, TcpPort, SecurityGroup, IVpcNetwork } from '@aws-cdk/aws-ec2';
+import { createELB, creatAutoScaling as createAutoScaling } from '@utils';
 import { getResourceName } from '@const';
-import { createSecurityGroup, creatAutoScalingWithELB } from '@utils';
-import { AutoScalingProps, AutoScalingStackProps, WebScalingProps } from '@asg';
 
 export default class AutoScalingStack extends Stack {
 
@@ -15,78 +15,88 @@ export default class AutoScalingStack extends Stack {
 
     // VPC作成
     const vpc = VpcNetwork.import(this, 'vpc', props.vpc);
-    const webSg = SecurityGroup.import(this, 'webSg', props.webSg);
-    const appSg = SecurityGroup.import(this, 'appSg', props.appSg);
+    const dbSg = SecurityGroup.import(this, 'webSg', props.dbSecurityGroup);
 
     // APP層のScaling
-    webScaling(this, {
-      appSg,
-      webSg,
-      vpc,
-    });
+    const webAsg = webScaling(this, vpc);
+    webAsg.loadBalancer.connections.allowFromAnyIPv4(new TcpPort(80));
 
     // APP層のScaling
-    appScaling(this, {
-      appSg,
-      webSg,
-      vpc,
-    });
+    const appAsg = appScaling(this, vpc);
+    appAsg.loadBalancer.connections.allowFrom(webAsg.autoScalingGroup.connections, new TcpPort(8080));
+
+    // DB層Route
+    appAsg.autoScalingGroup.connections.allowTo(dbSg.connections, new TcpPort(5432));
   }
 }
 
-const webScaling = (parent: Construct, props: WebScalingProps) => {
-  const elbSg = createSecurityGroup(parent, props.vpc, getResourceName('internet-sg'));
-  elbSg.addIngressRule(new AnyIPv4(), new TcpPort(80));
-
+const webScaling = (scope: Construct, vpc: IVpcNetwork): ScalingGroupProps => {
   // internet LB + AutoScaling
-  const alb = creatAutoScalingWithELB(
-    parent,
-    {
-      vpc: props.vpc,
-      elbSg,
-      asgSg: props.webSg,
-      vpcPlacement: {
-        subnetsToUse: SubnetType.Public,
-      },
-      elbName: getResourceName('internet'),
-      layerName: 'web',
-      machineImage: new GenericLinuxImage({
-        'ap-northeast-1': 'ami-0213c957664c78fac',
-      }),
-      port: 80,
-      internetFacing: true,
-    });
+  const alb = createELB(scope, {
+    vpc,
+    vpcPlacement: {
+      subnetName: 'web',
+    },
+    layerName: 'web',
+    port: 80,
+    internetFacing: true,
+    name: getResourceName('internet'),
+  });
 
-  // web
-  props.webSg && props.webSg.addIngressRule(elbSg, new TcpPort(80));
+  const asg = createAutoScaling(scope, {
+    vpc,
+    vpcPlacement: {
+      subnetName: 'web',
+    },
+    layerName: 'web',
+    machineImage: new AmazonLinuxImage(),
+  });
 
-  return alb;
+  asg.attachToApplicationTargetGroup(alb.targetGroup);
+  asg.connections.allowFrom(alb.loadBalancer.connections, new TcpPort(80));
+
+  return {
+    loadBalancer: alb.loadBalancer,
+    autoScalingGroup: asg,
+  };
 };
 
-const appScaling = (parent: Construct, props: WebScalingProps) => {
-  // intenal load blancer
-  const elbSg = createSecurityGroup(parent, props.vpc, getResourceName('internal-sg'));
-  props.webSg && elbSg.addIngressRule(props.webSg, new TcpPort(8080));
+const appScaling = (scope: Construct, vpc: IVpcNetwork): ScalingGroupProps => {
+  const asg = createAutoScaling(scope, {
+    vpc,
+    vpcPlacement: {
+      subnetName: 'app',
+    },
+    layerName: 'app',
+    machineImage: new AmazonLinuxImage(),
+  });
 
   // internal LB + AutoScaling
-  const alb = creatAutoScalingWithELB(
-    parent,
-    {
-      vpc: props.vpc,
-      elbSg,
-      asgSg: props.appSg,
-      vpcPlacement: {
-        subnetName: 'app',
-      },
-      elbName: getResourceName('internal'),
-      layerName: 'app',
-      machineImage: new AmazonLinuxImage(),
-      port: 8080,
-      internetFacing: false,
-    });
+  const alb = createELB(scope, {
+    vpc,
+    vpcPlacement: {
+      subnetName: 'app',
+    },
+    layerName: 'app',
+    port: 8080,
+    internetFacing: false,
+    name: getResourceName('internal'),
+  });
 
-  // application
-  props.appSg && props.appSg.addIngressRule(elbSg, new TcpPort(8080));
+  asg.attachToApplicationTargetGroup(alb.targetGroup);
+  asg.connections.allowFrom(alb.loadBalancer.connections, new TcpPort(8080));
 
-  return alb;
+  return {
+    loadBalancer: alb.loadBalancer,
+    autoScalingGroup: asg,
+  };
+  // const userData: string[] = [];
+  // userData.push('#!/bin/bash');
+  // userData.push('yum update - y');
+  // userData.push('yum install -y java-1.8.0-openjdk-devel tomcat8 tomcat8-webapps');
+  // userData.push('yum install -y git');
+  // userData.push('alternatives --update java /usr/lib/jvm/jre-1.8.0-openjdk.x86_64/bin/java');
+  // userData.push('curl -s http://get.sdkman.io | bash');
+
+  // asg.addUserData(userData.join(','));
 };
